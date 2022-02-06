@@ -1,93 +1,66 @@
 @isTest(isParallel=true)
 private class tmo_soqlCriteriaBuilderTest {
+  private final static tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
   @isTest
   static void equalsToCriteriaForString() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.equalsTo(Account.Name, 'salesforce');
-
-    System.assertEquals('Name = \'salesforce\'', cb.toCriteria());
+    assertEquals('Name = \'salesforce\'', cb.equalsTo(Account.Name, 'salesforce'));
   }
 
   @isTest
   static void equalsToCriteriaForBoolean() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.equalsTo(Opportunity.HasOpportunityLineItem, true);
-
-    System.assertEquals('HasOpportunityLineItem = true', cb.toCriteria());
+    assertEquals('HasOpportunityLineItem = true', cb.equalsTo(Opportunity.HasOpportunityLineItem, true));
   }
 
   @isTest
   static void equalsToCriteriaForNumeric() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.equalsTo(Opportunity.TotalOpportunityQuantity, 2);
-
-    System.assertEquals('TotalOpportunityQuantity = 2', cb.toCriteria());
+    assertEquals('TotalOpportunityQuantity = 2', cb.equalsTo(Opportunity.TotalOpportunityQuantity, 2));
   }
 
   @isTest
   static void notEqualsToCriteriaForString() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.notEqualsTo(Account.Name, 'microsoft');
-
-    System.assertEquals('Name != \'microsoft\'', cb.toCriteria());
+    assertEquals('Name != \'microsoft\'', cb.notEqualsTo(Account.Name, 'microsoft'));
   }
 
   @isTest
   static void notEqualsToCriteriaForNumeric() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.notEqualsTo(Opportunity.TotalOpportunityQuantity, 2);
-
-    System.assertEquals('TotalOpportunityQuantity != 2', cb.toCriteria());
+    assertEquals('TotalOpportunityQuantity != 2', cb.notEqualsTo(Opportunity.TotalOpportunityQuantity, 2));
   }
 
   @isTest
   static void greaterOrEqualCriteriaForNumeric() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.greaterOrEqual(Opportunity.TotalOpportunityQuantity, 2);
-
-    System.assertEquals('TotalOpportunityQuantity >= 2', cb.toCriteria());
+    assertEquals('TotalOpportunityQuantity >= 2', cb.greaterOrEqual(Opportunity.TotalOpportunityQuantity, 2));
   }
 
   @isTest
   static void greaterThanCriteriaForNumeric() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.greaterThan(Opportunity.TotalOpportunityQuantity, 2);
-
-    System.assertEquals('TotalOpportunityQuantity > 2', cb.toCriteria());
+    assertEquals('TotalOpportunityQuantity > 2', cb.greaterThan(Opportunity.TotalOpportunityQuantity, 2));
   }
 
   @isTest
   static void lessThanCriteriaForNumeric() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.lessThan(Opportunity.TotalOpportunityQuantity, 2);
-
-    System.assertEquals('TotalOpportunityQuantity < 2', cb.toCriteria());
+    assertEquals('TotalOpportunityQuantity < 2', cb.lessThan(Opportunity.TotalOpportunityQuantity, 2));
   }
 
   @isTest
   static void lessOrEqualCriteriaForNumeric() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.lessOrEqual(Opportunity.TotalOpportunityQuantity, 2);
-
-    System.assertEquals('TotalOpportunityQuantity <= 2', cb.toCriteria());
+    assertEquals('TotalOpportunityQuantity <= 2', cb.lessOrEqual(Opportunity.TotalOpportunityQuantity, 2));
   }
 
   @isTest
   static void inCriteriaForStrings() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     List<String> inValues = new List<String>{ 'BMW', 'Jeep' };
-    cb.isIn(Account.Name, inValues);
-
-    System.assertEquals('Name IN (\'BMW\',\'Jeep\')', cb.toCriteria());
+    assertEquals('Name IN (\'BMW\',\'Jeep\')', cb.isIn(Account.Name, inValues));
   }
 
   @isTest
   static void inCriteriaForNonStrings() {
-    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     List<Integer> inValues = new List<Integer>{ 1, 2, 3 };
-    cb.isIn(Account.NumberOfEmployees, inValues);
+    assertEquals('NumberOfEmployees IN (1,2,3)', cb.isIn(Account.NumberOfEmployees, inValues));
+  }
 
-    System.assertEquals('NumberOfEmployees IN (1,2,3)', cb.toCriteria());
+  @isTest
+  static void likeCriteria() {
+    assertEquals('Name LIKE \'%force\'', cb.isLike(Account.Name, '%force'));
   }
 
   @isTest
@@ -127,5 +100,9 @@ private class tmo_soqlCriteriaBuilderTest {
     cb.equalsTo(Contact.Department, 'ABC').composite(compositeCriteria);
 
     System.assertEquals('Department = \'ABC\' AND (Email = \'fieldValue\' OR Title = \'title\')', cb.toCriteria());
+  }
+
+  private static void assertEquals(String expectedCriteria, tmo_soqlCriteriaBuilder criteriaBuilder) {
+    System.assertEquals(expectedCriteria, criteriaBuilder.toCriteria());
   }
 }
