@@ -1,0 +1,12 @@
+{
+  "packageDirectories": [
+    {
+      "path": "soql-criteria-builder",
+      "default": true
+    }
+  ],
+  "name": "soql-criteria-builder",
+  "namespace": "",
+  "sfdcLoginUrl": "https://login.salesforce.com",
+  "sourceApiVersion": "53.0"
+}
