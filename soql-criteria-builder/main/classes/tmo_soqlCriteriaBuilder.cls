@@ -104,10 +104,15 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-	public tmo_soqlCriteriaBuilder notEqualsTo(
+  public tmo_soqlCriteriaBuilder notEqualsTo(
     Schema.SObjectField field,
-    Object fieldValue){
-    criteria.add(fieldName(field) + ' != ' + wrapIntoQuotesIfString(fieldValue));
+    Object fieldValue
+  ) {
+    criteria.add(
+      fieldName(field) +
+      ' != ' +
+      wrapIntoQuotesIfString(fieldValue)
+    );
     return this;
-	} 
+  }
 }

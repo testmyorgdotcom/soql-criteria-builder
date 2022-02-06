@@ -33,6 +33,14 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void notEqualsToCriteriaForNumeric() {
+    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
+    cb.notEqualsTo(Opportunity.TotalOpportunityQuantity, 2);
+
+    System.assertEquals('TotalOpportunityQuantity != 2', cb.toCriteria());
+  }
+
+  @isTest
   static void greaterOrEqualCriteriaForNumeric() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     cb.greaterOrEqual(Opportunity.TotalOpportunityQuantity, 2);
