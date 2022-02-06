@@ -3,11 +3,6 @@ private class tmo_soqlCriteriaBuilderTest {
   private final static tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
 
   @isTest
-  static void isNull() {
-    assertEquals('Name = NULL', cb.isNull(Account.Name));
-  }
-
-  @isTest
   static void equalsToCriteriaForString() {
     assertEquals('Name = \'salesforce\'', cb.equalsTo(Account.Name, 'salesforce'));
   }
@@ -84,6 +79,16 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void wrapsNotLikeCriteriaIntoBrackets() {
     assertEquals('(NOT Name LIKE \'%force\')', cb.isNotLike(Account.Name, '%force'));
+  }
+
+  @isTest
+  static void isNull() {
+    assertEquals('Name = NULL', cb.isNull(Account.Name));
+  }
+
+  @isTest
+  static void isNotNull() {
+    assertEquals('Name != NULL', cb.isNotNull(Account.Name));
   }
 
   @isTest
