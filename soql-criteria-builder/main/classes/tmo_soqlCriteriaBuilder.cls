@@ -52,8 +52,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
-    String singleCriteria = fieldName(field) + ' < ' + fieldValue;
-    criteria.add(singleCriteria);
+    criteria.add(fieldName(field) + ' < ' + fieldValue);
     return this;
   }
 
@@ -63,8 +62,12 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, List<Object> inValues) {
-    String singleCriteria = fieldName(field) + ' IN ' + wrapIntoBrackets(convertToInValuesAsString(inValues));
-    criteria.add(singleCriteria);
+    criteria.add(fieldName(field) + ' IN ' + wrapIntoBrackets(convertToInValuesAsString(inValues)));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, List<Object> inValues) {
+    criteria.add(fieldName(field) + ' NOT IN ' + wrapIntoBrackets(convertToInValuesAsString(inValues)));
     return this;
   }
 

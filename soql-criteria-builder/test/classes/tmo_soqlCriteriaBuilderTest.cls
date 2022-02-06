@@ -59,6 +59,18 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void notInCriteriaForStrings() {
+    List<String> inValues = new List<String>{ 'BMW', 'Jeep' };
+    assertEquals('Name NOT IN (\'BMW\',\'Jeep\')', cb.isNotIn(Account.Name, inValues));
+  }
+
+  @isTest
+  static void notInCriteriaForNonStrings() {
+    List<Integer> inValues = new List<Integer>{ 1, 2, 3 };
+    assertEquals('NumberOfEmployees NOT IN (1,2,3)', cb.isNotIn(Account.NumberOfEmployees, inValues));
+  }
+
+  @isTest
   static void likeCriteria() {
     assertEquals('Name LIKE \'%force\'', cb.isLike(Account.Name, '%force'));
   }
