@@ -1,18 +1,15 @@
-# Salesforce DX Project: Next Steps
+# SOQL Criteria Builder
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+DSL support for building SOQL where clause in an elegant way. Inspired by fflib Selectors Query Factory.
 
-## How Do You Plan to Deploy Your Changes?
+<!-- TODO: show elegance before and afater -->
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+[Comparison Operators](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm)
 
-## Configure Your Salesforce DX Project
+<!-- TODO: show how fieldExpression is recorded with join expression -->
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+<!-- TODO: implement limit 4000 check https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_conditionexpression.htm -->
 
-## Read All About It
+<!-- TODO: multi-select picklist https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_querying_multiselect_picklists.htm-->
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+<!-- TODO: date functions in where clause https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm -->
