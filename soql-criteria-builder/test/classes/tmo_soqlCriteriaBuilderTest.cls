@@ -64,6 +64,11 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void wrapsNotLikeCriteriaIntoBrackets() {
+    assertEquals('(NOT Name LIKE \'%force\')', cb.isNotLike(Account.Name, '%force'));
+  }
+
+  @isTest
   static void joinsCriteriaViaAndByDefault() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     cb.equalsTo(Account.Industry, 'IT').greaterOrEqual(Account.NumberOfEmployees, 100);

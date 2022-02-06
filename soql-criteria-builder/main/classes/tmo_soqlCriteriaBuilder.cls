@@ -96,4 +96,10 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     criteria.add(fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue));
     return this;
   }
+
+  public tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, Object fieldValue) {
+    String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue);
+    criteria.add(wrapIntoBrackets(singleCriteria));
+    return this;
+  }
 }
