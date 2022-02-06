@@ -1,6 +1,12 @@
 @isTest(isParallel=true)
 private class tmo_soqlCriteriaBuilderTest {
   private final static tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
+
+  @isTest
+  static void isNull() {
+    assertEquals('Name = NULL', cb.isNull(Account.Name));
+  }
+
   @isTest
   static void equalsToCriteriaForString() {
     assertEquals('Name = \'salesforce\'', cb.equalsTo(Account.Name, 'salesforce'));

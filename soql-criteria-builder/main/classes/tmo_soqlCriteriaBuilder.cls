@@ -105,4 +105,9 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     criteria.add(wrapIntoBrackets(singleCriteria));
     return this;
   }
+
+  public tmo_soqlCriteriaBuilder isNull(Schema.SObjectField field) {
+    criteria.add(fieldName(field) + ' = NULL');
+    return this;
+  }
 }
