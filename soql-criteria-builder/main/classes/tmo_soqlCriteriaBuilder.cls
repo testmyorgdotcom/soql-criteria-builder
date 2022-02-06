@@ -42,8 +42,12 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
-    String singleCriteria = fieldName(field) + ' >= ' + fieldValue;
-    criteria.add(singleCriteria);
+    criteria.add(fieldName(field) + ' >= ' + fieldValue);
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
+    criteria.add(fieldName(field) + ' > ' + fieldValue);
     return this;
   }
 

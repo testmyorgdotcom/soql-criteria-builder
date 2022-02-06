@@ -49,6 +49,14 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void greaterThanCriteriaForNumeric() {
+    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
+    cb.greaterThan(Opportunity.TotalOpportunityQuantity, 2);
+
+    System.assertEquals('TotalOpportunityQuantity > 2', cb.toCriteria());
+  }
+
+  @isTest
   static void lessThanCriteriaForNumeric() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     cb.lessThan(Opportunity.TotalOpportunityQuantity, 2);
