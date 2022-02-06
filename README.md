@@ -4,9 +4,9 @@ DSL support for building SOQL WHERE Clause in an elegant way.
 Inspired by [fflib_QueryFactory](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls).  
 Addresses necessity to build criteria as String for [fflib_QueryFactory#setCondition()](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/397fa3574bf57866660d6737e2060f2f171d130a/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls#L298) method.
 
-<a href="https://githubsfdeploy.herokuapp.com?owner=testmyorgdotcom&repo=soql-criteria-builder">
+<a href="https://githubsfdeploy.herokuapp.com?owner=testmyorgdotcom&repo=soql-criteria-builder&ref=main">
   <img alt="Deploy to Salesforce"
-	   src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/src/main/webapp/resources/img/deploy.png">
+       src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
 </a>
 
 ## Benefits
