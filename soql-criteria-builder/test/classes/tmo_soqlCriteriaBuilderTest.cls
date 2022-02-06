@@ -57,6 +57,14 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void lessOrEqualCriteriaForNumeric() {
+    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
+    cb.lessOrEqual(Opportunity.TotalOpportunityQuantity, 2);
+
+    System.assertEquals('TotalOpportunityQuantity <= 2', cb.toCriteria());
+  }
+
+  @isTest
   static void inCriteriaForStrings() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     List<String> inValues = new List<String>{ 'BMW', 'Jeep' };

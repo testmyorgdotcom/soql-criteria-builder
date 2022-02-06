@@ -70,6 +70,14 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
+  public tmo_soqlCriteriaBuilder lessOrEqual(
+    Schema.SObjectField field,
+    Object numericValue
+  ) {
+    criteria.add(fieldName(field) + ' <= ' + numericValue);
+    return this;
+  }
+
   public tmo_soqlCriteriaBuilder isIn(
     Schema.SObjectField field,
     List<Object> inValues
