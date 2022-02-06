@@ -34,7 +34,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return String.join(finalCriteriaElements, ' ');
   }
 
-  public tmo_soqlCriteriaBuilder configureCriteriaFactoryFields(Schema.SObjectField referenceField) {
+  public tmo_soqlCriteriaBuilder configureForReferenceField(Schema.SObjectField referenceField) {
     referenceFieldNamePreffix = referenceField.getDescribe().getRelationshipName() + '.';
     return this;
   }
@@ -81,8 +81,18 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
+  public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String subSelect) {
+    addCriteria(fieldName(field) + ' IN ' + wrapIntoBrackets(subSelect));
+    return this;
+  }
+
   public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, List<Object> inValues) {
     addCriteria(fieldName(field) + ' NOT IN ' + wrapIntoBrackets(convertToInValuesAsString(inValues)));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String subSelect) {
+    addCriteria(fieldName(field) + ' NOT IN ' + wrapIntoBrackets(subSelect));
     return this;
   }
 
@@ -130,6 +140,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     addCriteria(fieldName(field) + ' != NULL');
     return this;
   }
+
   private void addCriteria(String criterion) {
     if (!criteria.isEmpty()) {
       trueIfAndJoinElements.add(nextJoinFlagValue);

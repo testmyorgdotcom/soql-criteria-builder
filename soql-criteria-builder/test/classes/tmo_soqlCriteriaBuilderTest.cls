@@ -60,6 +60,18 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void inCriteriaForSubSelect() {
+    String subSelect = 'SELECT Id FROM Account';
+    assertEquals('AccountId IN (SELECT Id FROM Account)', cb.isIn(Contact.AccountId, subSelect));
+  }
+
+  @isTest
+  static void notInCriteriaForSubSelect() {
+    String subSelect = 'SELECT Id FROM Account';
+    assertEquals('AccountId NOT IN (SELECT Id FROM Account)', cb.isNotIn(Contact.AccountId, subSelect));
+  }
+
+  @isTest
   static void notInCriteriaForStrings() {
     List<String> inValues = new List<String>{ 'BMW', 'Jeep' };
     assertEquals('Name NOT IN (\'BMW\',\'Jeep\')', cb.isNotIn(Account.Name, inValues));
@@ -108,7 +120,7 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void criteriaBasedOnReferenceAttributes() {
     cb
-      .configureCriteriaFactoryFields(Contact.AccountId)
+      .configureForReferenceField(Contact.AccountId)
       .isNotNull(Account.Industry)
       .greaterOrEqual(Account.NumberOfEmployees, 100);
 
