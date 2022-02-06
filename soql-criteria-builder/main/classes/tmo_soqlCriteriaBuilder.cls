@@ -18,31 +18,20 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return String.join(criteria, joinVia);
   }
 
-  public tmo_soqlCriteriaBuilder configureCriteriaFactoryFields(
-    Schema.SObjectField referenceField
-  ) {
-    referenceFieldNamePreffix =
-      referenceField.getDescribe().getRelationshipName() + '.';
+  public tmo_soqlCriteriaBuilder configureCriteriaFactoryFields(Schema.SObjectField referenceField) {
+    referenceFieldNamePreffix = referenceField.getDescribe().getRelationshipName() + '.';
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder equalsTo(
-    Schema.SObjectField field,
-    Object fieldValue
-  ) {
-    String singleCriteria =
-      fieldName(field) +
-      ' = ' +
-      wrapIntoQuotesIfString(fieldValue);
+  public tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
+    String singleCriteria = fieldName(field) + ' = ' + wrapIntoQuotesIfString(fieldValue);
     criteria.add(singleCriteria);
     return this;
   }
 
   private String fieldName(Schema.SObjectField field) {
     String fieldName = field.getDescribe().getName();
-    return referenceFieldNamePreffix != null
-      ? referenceFieldNamePreffix + fieldName
-      : fieldName;
+    return referenceFieldNamePreffix != null ? referenceFieldNamePreffix + fieldName : fieldName;
   }
 
   private String wrapIntoQuotesIfString(Object value) {
@@ -52,40 +41,25 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return '' + value;
   }
 
-  public tmo_soqlCriteriaBuilder greaterOrEqual(
-    Schema.SObjectField field,
-    Object numericValue
-  ) {
-    String singleCriteria = fieldName(field) + ' >= ' + numericValue;
+  public tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
+    String singleCriteria = fieldName(field) + ' >= ' + fieldValue;
     criteria.add(singleCriteria);
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessThan(
-    Schema.SObjectField field,
-    Object numericValue
-  ) {
-    String singleCriteria = fieldName(field) + ' < ' + numericValue;
+  public tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
+    String singleCriteria = fieldName(field) + ' < ' + fieldValue;
     criteria.add(singleCriteria);
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessOrEqual(
-    Schema.SObjectField field,
-    Object numericValue
-  ) {
-    criteria.add(fieldName(field) + ' <= ' + numericValue);
+  public tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
+    criteria.add(fieldName(field) + ' <= ' + fieldValue);
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder isIn(
-    Schema.SObjectField field,
-    List<Object> inValues
-  ) {
-    String singleCriteria =
-      fieldName(field) +
-      ' IN ' +
-      wrapIntoBrackets(convertToInValuesAsString(inValues));
+  public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, List<Object> inValues) {
+    String singleCriteria = fieldName(field) + ' IN ' + wrapIntoBrackets(convertToInValuesAsString(inValues));
     criteria.add(singleCriteria);
     return this;
   }
@@ -105,22 +79,13 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return wrapIntoQuotesIfString(String.join(inValues, '\',\''));
   }
 
-  public tmo_soqlCriteriaBuilder composite(
-    tmo_soqlCriteriaBuilder complexCriteria
-  ) {
+  public tmo_soqlCriteriaBuilder composite(tmo_soqlCriteriaBuilder complexCriteria) {
     criteria.add(wrapIntoBrackets(complexCriteria.toCriteria()));
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder notEqualsTo(
-    Schema.SObjectField field,
-    Object fieldValue
-  ) {
-    criteria.add(
-      fieldName(field) +
-      ' != ' +
-      wrapIntoQuotesIfString(fieldValue)
-    );
+  public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
+    criteria.add(fieldName(field) + ' != ' + wrapIntoQuotesIfString(fieldValue));
     return this;
   }
 }

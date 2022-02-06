@@ -85,28 +85,17 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void joinsCriteriaViaAndByDefault() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb
-      .equalsTo(Account.Industry, 'IT')
-      .greaterOrEqual(Account.NumberOfEmployees, 100);
+    cb.equalsTo(Account.Industry, 'IT').greaterOrEqual(Account.NumberOfEmployees, 100);
 
-    System.assertEquals(
-      'Industry = \'IT\' AND NumberOfEmployees >= 100',
-      cb.toCriteria()
-    );
+    System.assertEquals('Industry = \'IT\' AND NumberOfEmployees >= 100', cb.toCriteria());
   }
 
   @isTest
   static void canJoinViaOrIfConfigured() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb
-      .equalsTo(Account.Industry, 'IT')
-      .greaterOrEqual(Account.NumberOfEmployees, 100)
-      .joinViaOr();
+    cb.equalsTo(Account.Industry, 'IT').greaterOrEqual(Account.NumberOfEmployees, 100).joinViaOr();
 
-    System.assertEquals(
-      'Industry = \'IT\' OR NumberOfEmployees >= 100',
-      cb.toCriteria()
-    );
+    System.assertEquals('Industry = \'IT\' OR NumberOfEmployees >= 100', cb.toCriteria());
   }
 
   @isTest
@@ -118,26 +107,17 @@ private class tmo_soqlCriteriaBuilderTest {
       .equalsTo(Account.Industry, 'IT')
       .greaterOrEqual(Account.NumberOfEmployees, 100);
 
-    System.assertEquals(
-      'Account.Industry = \'IT\' AND Account.NumberOfEmployees >= 100',
-      cb.toCriteria()
-    );
+    System.assertEquals('Account.Industry = \'IT\' AND Account.NumberOfEmployees >= 100', cb.toCriteria());
   }
 
   // TODO: rewrite to not null and other examples
   @isTest
   static void wrapsCompositeCriteriaIntoBrackets() {
     tmo_soqlCriteriaBuilder compositeCriteria = new tmo_soqlCriteriaBuilder();
-    compositeCriteria
-      .equalsTo(Contact.Email, 'fieldValue')
-      .equalsTo(Contact.Title, 'title')
-      .joinViaOr();
+    compositeCriteria.equalsTo(Contact.Email, 'fieldValue').equalsTo(Contact.Title, 'title').joinViaOr();
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     cb.equalsTo(Contact.Department, 'ABC').composite(compositeCriteria);
 
-    System.assertEquals(
-      'Department = \'ABC\' AND (Email = \'fieldValue\' OR Title = \'title\')',
-      cb.toCriteria()
-    );
+    System.assertEquals('Department = \'ABC\' AND (Email = \'fieldValue\' OR Title = \'title\')', cb.toCriteria());
   }
 }
