@@ -56,6 +56,11 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return '' + value;
   }
 
+  public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
+    addCriteria(fieldName(field) + ' != ' + wrapIntoQuotesIfString(fieldValue));
+    return this;
+  }
+
   public tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' >= ' + fieldValue);
     return this;
@@ -116,10 +121,6 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
-    addCriteria(fieldName(field) + ' != ' + wrapIntoQuotesIfString(fieldValue));
-    return this;
-  }
   public tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue));
     return this;
