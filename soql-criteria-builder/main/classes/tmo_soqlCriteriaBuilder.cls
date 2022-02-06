@@ -26,7 +26,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder equalTo(
+  public tmo_soqlCriteriaBuilder equalsTo(
     Schema.SObjectField field,
     Object fieldValue
   ) {
@@ -52,7 +52,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return '' + value;
   }
 
-  public tmo_soqlCriteriaBuilder greaterThanOrEqual(
+  public tmo_soqlCriteriaBuilder greaterOrEqual(
     Schema.SObjectField field,
     Object numericValue
   ) {

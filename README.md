@@ -13,3 +13,5 @@ DSL support for building SOQL where clause in an elegant way. Inspired by fflib 
 <!-- TODO: multi-select picklist https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_querying_multiselect_picklists.htm-->
 
 <!-- TODO: date functions in where clause https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm -->
+
+Compile time fields name validation
