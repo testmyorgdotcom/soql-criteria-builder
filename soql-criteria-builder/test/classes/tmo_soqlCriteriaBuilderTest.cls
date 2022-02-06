@@ -102,7 +102,7 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void canJoinViaOrIfConfigured() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
-    cb.equalsTo(Account.Industry, 'IT').greaterOrEqual(Account.NumberOfEmployees, 100).joinViaOr();
+    cb.equalsTo(Account.Industry, 'IT').withOr().greaterOrEqual(Account.NumberOfEmployees, 100);
 
     System.assertEquals('Industry = \'IT\' OR NumberOfEmployees >= 100', cb.toCriteria());
   }
@@ -123,7 +123,7 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void wrapsCompositeCriteriaIntoBrackets() {
     tmo_soqlCriteriaBuilder compositeCriteria = new tmo_soqlCriteriaBuilder();
-    compositeCriteria.equalsTo(Contact.Email, 'fieldValue').equalsTo(Contact.Title, 'title').joinViaOr();
+    compositeCriteria.equalsTo(Contact.Email, 'fieldValue').withOr().equalsTo(Contact.Title, 'title');
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     cb.equalsTo(Contact.Department, 'ABC').composite(compositeCriteria);
 
