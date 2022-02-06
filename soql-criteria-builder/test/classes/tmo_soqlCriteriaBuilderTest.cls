@@ -25,6 +25,14 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void notEqualsToCriteriaForString() {
+    tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
+    cb.notEqualsTo(Account.Name, 'microsoft');
+
+    System.assertEquals('Name != \'microsoft\'', cb.toCriteria());
+  }
+
+  @isTest
   static void greaterOrEqualCriteriaForNumeric() {
     tmo_soqlCriteriaBuilder cb = new tmo_soqlCriteriaBuilder();
     cb.greaterOrEqual(Opportunity.TotalOpportunityQuantity, 2);

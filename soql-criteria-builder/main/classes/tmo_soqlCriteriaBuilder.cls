@@ -103,4 +103,11 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     criteria.add(wrapIntoBrackets(complexCriteria.toCriteria()));
     return this;
   }
+
+	public tmo_soqlCriteriaBuilder notEqualsTo(
+    Schema.SObjectField field,
+    Object fieldValue){
+    criteria.add(fieldName(field) + ' != ' + wrapIntoQuotesIfString(fieldValue));
+    return this;
+	} 
 }
