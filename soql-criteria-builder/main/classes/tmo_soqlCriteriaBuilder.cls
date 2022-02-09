@@ -1,4 +1,4 @@
-public inherited sharing class tmo_soqlCriteriaBuilder {
+public inherited sharing virtual class tmo_soqlCriteriaBuilder {
   private String referenceFieldNamePreffix;
   private List<String> criteria;
   private List<Boolean> trueIfAndJoinElements;
@@ -39,7 +39,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' = ' + wrapIntoQuotesIfString(fieldValue));
     return this;
   }
@@ -56,7 +56,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return '' + value;
   }
 
-  public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' != ' + wrapIntoQuotesIfString(fieldValue));
     return this;
   }
@@ -86,7 +86,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String subSelect) {
+  public virtual tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String subSelect) {
     addCriteria(fieldName(field) + ' IN ' + wrapIntoBrackets(subSelect));
     return this;
   }
@@ -96,7 +96,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String subSelect) {
+  public virtual tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String subSelect) {
     addCriteria(fieldName(field) + ' NOT IN ' + wrapIntoBrackets(subSelect));
     return this;
   }
@@ -121,12 +121,12 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue));
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, Object fieldValue) {
     String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue);
     addCriteria(wrapIntoBrackets(singleCriteria));
     return this;
@@ -148,5 +148,42 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
       withAnd();
     }
     criteria.add(criterion);
+  }
+
+  public static tmo_soqlCriteriaBuilder bindingBuilder() {
+    return new tmo_bindingSoqlCriteriaBuilder();
+  }
+
+  private inherited sharing class tmo_bindingSoqlCriteriaBuilder extends tmo_soqlCriteriaBuilder {
+    public override tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
+      addCriteria(fieldName(field) + ' = ' + fieldValue?.toString());
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
+      addCriteria(fieldName(field) + ' != ' + fieldValue?.toString());
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String fieldValue) {
+      addCriteria(fieldName(field) + ' IN ' + fieldValue);
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String subSelect) {
+      addCriteria(fieldName(field) + ' NOT IN ' + subSelect);
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, Object fieldValue) {
+      addCriteria(fieldName(field) + ' LIKE ' + fieldValue?.toString());
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, Object fieldValue) {
+      String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + fieldValue?.toString();
+      addCriteria(wrapIntoBrackets(singleCriteria));
+      return this;
+    }
   }
 }
