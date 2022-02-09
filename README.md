@@ -17,7 +17,7 @@ Addresses necessity to build criteria as String for [fflib_QueryFactory#setCondi
 
 ## Examples
 
-Below examples are built under assumption of the following test factory method presence:
+Below examples are built under assumption of the following factory method presence:
 
 ```java
 private static tmo_soqlCriteriaBuilder cb() {
@@ -103,3 +103,16 @@ System.assertEquals(criteriaAsString, cb.toCriteria());
 
 Prefer queries with Bind Variables instead of dynamically built ones.  
 Underlying databases (e.g. [Oracle](https://blogs.oracle.com/sql/post/improve-sql-query-performance-by-using-bind-variables)) will create additional plan for every similar query built dynamically. This will decrease performance of the database and will require additional resources to optimize it in the background.
+
+Below examples are built under assumption of the following factory method presence:
+
+```java
+private static tmo_soqlCriteriaBuilder bb() {
+    return tmo_soqlCriteriaBuilder.bindingBuilder();
+}
+```
+
+```java
+assertEquals('Name = :companyName', bb().equalsTo(Account.Name, ':companyName'));
+assertEquals('Name IN :inValues', bb().isIn(Account.Name, ':inValues'));
+```
