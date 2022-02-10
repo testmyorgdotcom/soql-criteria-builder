@@ -22,7 +22,7 @@ Below examples are built under assumption of the following factory method presen
 
 ```java
 private static tmo_soqlCriteriaBuilder cb() {
-    return new tmo_soqlCriteriaBuilder();
+    return tmo_soqlCriteriaBuilder.stringCriteriaBuilder();
 }
 ```
 
