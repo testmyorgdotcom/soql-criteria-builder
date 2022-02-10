@@ -14,6 +14,7 @@ Addresses necessity to build criteria as String for [fflib_QueryFactory#setCondi
 - Supports all [Comparison Operators](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm)
 - Compile Time validation of the Field Names used in SOQL Criteria
 - Dynamic SOQL Criteria based on User input
+- Bind Variables
 
 ## Examples
 
