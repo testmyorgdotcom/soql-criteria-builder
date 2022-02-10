@@ -139,21 +139,95 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
-  static void passesBindVariables() {
+  static void bindingBuilderUsesBindingVariables() {
     assertEquals('Name = :companyName', bb().equalsTo(Account.Name, ':companyName'));
     assertEquals('Name != :companyName', bb().notEqualsTo(Account.Name, ':companyName'));
     assertEquals('NumberOfEmployees > :value', bb().greaterThan(Account.NumberOfEmployees, ':value'));
     assertEquals('NumberOfEmployees >= :value', bb().greaterOrEqual(Account.NumberOfEmployees, ':value'));
     assertEquals('NumberOfEmployees < :value', bb().lessThan(Account.NumberOfEmployees, ':value'));
     assertEquals('NumberOfEmployees <= :value', bb().lessOrEqual(Account.NumberOfEmployees, ':value'));
+    assertEquals('Name = NULL', bb().isNull(Account.Name));
+    assertEquals('Name != NULL', bb().isNotNull(Account.Name));
     assertEquals('Name IN :inValues', bb().isIn(Account.Name, ':inValues'));
     assertEquals('Name NOT IN :inValues', bb().isNotIn(Account.Name, ':inValues'));
     assertEquals('Name LIKE :likeValue', bb().isLike(Account.Name, ':likeValue'));
     assertEquals('(NOT Name LIKE :likeValue)', bb().isNotLike(Account.Name, ':likeValue'));
   }
 
+  @isTest
+  static void bindingBuilderFailsIfNotWithStringArgument() {
+    Integer numberOfMethodsToCheck = 6;
+    Integer numberOfMethodsChecked = 0;
+    for (Integer i = 0; i < numberOfMethodsToCheck; i++) {
+      try {
+        switch on i {
+          when 0 {
+            bb().equalsTo(Account.NumberOfEmployees, 100);
+          }
+          when 1 {
+            bb().notEqualsTo(Account.NumberOfEmployees, 100);
+          }
+          when 2 {
+            bb().greaterThan(Account.NumberOfEmployees, 100);
+          }
+          when 3 {
+            bb().greaterOrEqual(Account.NumberOfEmployees, 100);
+          }
+          when 4 {
+            bb().lessThan(Account.NumberOfEmployees, 100);
+          }
+          when 5 {
+            bb().lessOrEqual(Account.NumberOfEmployees, 100);
+          }
+          when else {
+            System.assert(false, 'uncreachable: expected number of methods to be checked');
+          }
+        }
+      } catch (IllegalArgumentException iae) {
+        numberOfMethodsChecked++;
+      }
+    }
+    System.assertEquals(numberOfMethodsToCheck, numberOfMethodsChecked, 'should fail on all non binding methods');
+  }
+
+  @isTest
+  static void bindingBuilderFailsIfNotWithBindingVariable() {
+    Integer numberOfMethodsToCheck = 6;
+    Integer numberOfMethodsChecked = 0;
+    for (Integer i = 0; i < numberOfMethodsToCheck; i++) {
+      try {
+        switch on i {
+          when 0 {
+            bb().equalsTo(Account.Name, 'salesforce');
+          }
+          when 1 {
+            bb().notEqualsTo(Account.Name, 'salesforce');
+          }
+          when 2 {
+            bb().greaterThan(Account.NumberOfEmployees, '100');
+          }
+          when 3 {
+            bb().greaterOrEqual(Account.NumberOfEmployees, '100');
+          }
+          when 4 {
+            bb().lessThan(Account.NumberOfEmployees, '100');
+          }
+          when 5 {
+            bb().lessOrEqual(Account.NumberOfEmployees, '100');
+          }
+          when else {
+            System.assert(false, 'uncreachable: expected number of methods to be checked');
+          }
+        }
+      } catch (IllegalArgumentException iae) {
+        numberOfMethodsChecked++;
+      }
+    }
+    System.assertEquals(numberOfMethodsToCheck, numberOfMethodsChecked, 'should fail on all non binding methods');
+  }
+
   private static tmo_soqlCriteriaBuilder cb() {
-    return new tmo_soqlCriteriaBuilder();
+    return tmo_soqlCriteriaBuilder.stringCriteriaBuilder();
   }
 
   private static tmo_soqlCriteriaBuilder bb() {

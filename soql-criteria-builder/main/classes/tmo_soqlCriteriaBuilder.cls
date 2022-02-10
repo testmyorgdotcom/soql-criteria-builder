@@ -4,7 +4,7 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
   private List<Boolean> trueIfAndJoinElements;
   private Boolean nextJoinFlagValue;
 
-  public tmo_soqlCriteriaBuilder() {
+  private tmo_soqlCriteriaBuilder() {
     referenceFieldNamePreffix = null;
     criteria = new List<String>();
     trueIfAndJoinElements = new List<Boolean>();
@@ -61,22 +61,22 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' >= ' + fieldValue);
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' > ' + fieldValue);
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' < ' + fieldValue);
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' <= ' + fieldValue);
     return this;
   }
@@ -121,12 +121,12 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, String fieldValue) {
     addCriteria(fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, String fieldValue) {
     String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue);
     addCriteria(wrapIntoBrackets(singleCriteria));
     return this;
@@ -150,18 +150,54 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     criteria.add(criterion);
   }
 
+  public static tmo_soqlCriteriaBuilder stringCriteriaBuilder() {
+    return new tmo_soqlCriteriaBuilder();
+  }
+
   public static tmo_soqlCriteriaBuilder bindingBuilder() {
     return new tmo_bindingSoqlCriteriaBuilder();
   }
 
   private inherited sharing class tmo_bindingSoqlCriteriaBuilder extends tmo_soqlCriteriaBuilder {
     public override tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
-      addCriteria(fieldName(field) + ' = ' + fieldValue?.toString());
+      failIfNotBindingVariable(fieldValue);
+      addCriteria(fieldName(field) + ' = ' + fieldValue);
       return this;
     }
 
+    private void failIfNotBindingVariable(Object fieldValue) {
+      if (!(fieldValue instanceof String) || !fieldValue?.toString().startsWith(':')) {
+        throw new IllegalArgumentException('binding builder can work with Binding Variables only');
+      }
+    }
+
     public override tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
-      addCriteria(fieldName(field) + ' != ' + fieldValue?.toString());
+      failIfNotBindingVariable(fieldValue);
+      addCriteria(fieldName(field) + ' != ' + fieldValue);
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
+      failIfNotBindingVariable(fieldValue);
+      super.greaterOrEqual(field, fieldValue);
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
+      failIfNotBindingVariable(fieldValue);
+      super.greaterThan(field, fieldValue);
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
+      failIfNotBindingVariable(fieldValue);
+      super.lessThan(field, fieldValue);
+      return this;
+    }
+
+    public override tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
+      failIfNotBindingVariable(fieldValue);
+      super.lessOrEqual(field, fieldValue);
       return this;
     }
 
@@ -175,14 +211,13 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
       return this;
     }
 
-    public override tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, Object fieldValue) {
-      addCriteria(fieldName(field) + ' LIKE ' + fieldValue?.toString());
+    public override tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, String fieldValue) {
+      addCriteria(fieldName(field) + ' LIKE ' + fieldValue);
       return this;
     }
 
-    public override tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, Object fieldValue) {
-      String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + fieldValue?.toString();
-      addCriteria(wrapIntoBrackets(singleCriteria));
+    public override tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, String fieldValue) {
+      addCriteria(wrapIntoBrackets('NOT ' + fieldName(field) + ' LIKE ' + fieldValue));
       return this;
     }
   }
