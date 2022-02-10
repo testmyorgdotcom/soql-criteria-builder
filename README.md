@@ -102,7 +102,7 @@ System.assertEquals(criteriaAsString, cb.toCriteria());
 
 ## Additional Thoughts
 
-Prefer queries with `:vindVariable` instead of dynamically built ones.  
+Prefer queries with `:bindVariable` instead of dynamically built ones.  
 Underlying databases (e.g. [Oracle](https://blogs.oracle.com/sql/post/improve-sql-query-performance-by-using-bind-variables)) will create additional plan for every similar query built dynamically. This will decrease performance of the database and will require additional resources to optimize it in the background.
 
 Below examples are built under assumption of the following factory method presence:
