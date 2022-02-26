@@ -16,6 +16,16 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void equalsToCriteriaForDateField() {
+    assertEquals('Birthdate = 1995-05-21', cb().equalsTo(Contact.Birthdate, Date.valueOf('1995-05-21')));
+  }
+
+  @isTest
+  static void equalsToCriteriaForDateString() {
+    assertEquals('Birthdate = 1995-05-21', cb().equalsTo(Contact.Birthdate, '1995-05-21'));
+  }
+
+  @isTest
   static void notEqualsToCriteriaForString() {
     assertEquals('Name != \'microsoft\'', cb().notEqualsTo(Account.Name, 'microsoft'));
   }
@@ -26,8 +36,28 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void notEqualsToCriteriaForDateField() {
+    assertEquals('Birthdate != 1995-05-21', cb().notEqualsTo(Contact.Birthdate, Date.valueOf('1995-05-21')));
+  }
+
+  @isTest
+  static void notEqualsToCriteriaForDateString() {
+    assertEquals('Birthdate != 1995-05-21', cb().notEqualsTo(Contact.Birthdate, '1995-05-21'));
+  }
+
+  @isTest
   static void greaterOrEqualCriteriaForNumeric() {
     assertEquals('TotalOpportunityQuantity >= 2', cb().greaterOrEqual(Opportunity.TotalOpportunityQuantity, 2));
+  }
+
+  @isTest
+  static void greaterOrEqualCriteriaForDateField() {
+    assertEquals('Birthdate >= 1995-05-21', cb().greaterOrEqual(Contact.Birthdate, Date.valueOf('1995-05-21')));
+  }
+
+  @isTest
+  static void greaterOrEqualCriteriaForDateString() {
+    assertEquals('Birthdate >= 1995-05-21', cb().greaterOrEqual(Contact.Birthdate, '1995-05-21'));
   }
 
   @isTest
@@ -36,13 +66,43 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void greaterThanCriteriaForDateField() {
+    assertEquals('Birthdate > 1995-05-21', cb().greaterThan(Contact.Birthdate, Date.valueOf('1995-05-21')));
+  }
+
+  @isTest
+  static void greaterThanCriteriaForDateString() {
+    assertEquals('Birthdate > 1995-05-21', cb().greaterThan(Contact.Birthdate, '1995-05-21'));
+  }
+
+  @isTest
   static void lessThanCriteriaForNumeric() {
     assertEquals('TotalOpportunityQuantity < 2', cb().lessThan(Opportunity.TotalOpportunityQuantity, 2));
   }
 
   @isTest
+  static void lessThanCriteriaForDateField() {
+    assertEquals('Birthdate < 1995-05-21', cb().lessThan(Contact.Birthdate, Date.valueOf('1995-05-21')));
+  }
+
+  @isTest
+  static void lessThanCriteriaForDateString() {
+    assertEquals('Birthdate < 1995-05-21', cb().lessThan(Contact.Birthdate, '1995-05-21'));
+  }
+
+  @isTest
   static void lessOrEqualCriteriaForNumeric() {
     assertEquals('TotalOpportunityQuantity <= 2', cb().lessOrEqual(Opportunity.TotalOpportunityQuantity, 2));
+  }
+
+  @isTest
+  static void lessOrEqualCriteriaForDateField() {
+    assertEquals('Birthdate <= 1995-05-21', cb().lessOrEqual(Contact.Birthdate, Date.valueOf('1995-05-21')));
+  }
+
+  @isTest
+  static void lessOrEqualCriteriaForDateString() {
+    assertEquals('Birthdate <= 1995-05-21', cb().lessOrEqual(Contact.Birthdate, '1995-05-21'));
   }
 
   @isTest
@@ -142,21 +202,30 @@ private class tmo_soqlCriteriaBuilderTest {
   static void bindingBuilderUsesBindingVariables() {
     assertEquals('Name = :companyName', bb().equalsTo(Account.Name, ':companyName'));
     assertEquals('Name != :companyName', bb().notEqualsTo(Account.Name, ':companyName'));
+    assertEquals('Birthdate = :birthDate', bb().equalsTo(Contact.Birthdate, ':birthDate'));
     assertEquals('NumberOfEmployees > :value', bb().greaterThan(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate > :birthDate', bb().greaterThan(Contact.Birthdate, ':birthDate'));
     assertEquals('NumberOfEmployees >= :value', bb().greaterOrEqual(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate >= :birthDate', bb().greaterOrEqual(Contact.Birthdate, ':birthDate'));
     assertEquals('NumberOfEmployees < :value', bb().lessThan(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate < :birthDate', bb().lessThan(Contact.Birthdate, ':birthDate'));
     assertEquals('NumberOfEmployees <= :value', bb().lessOrEqual(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate <= :birthDate', bb().lessOrEqual(Contact.Birthdate, ':birthDate'));
     assertEquals('Name = NULL', bb().isNull(Account.Name));
+    assertEquals('Birthdate = NULL', bb().isNull(Contact.Birthdate));
     assertEquals('Name != NULL', bb().isNotNull(Account.Name));
+    assertEquals('Birthdate != NULL', bb().isNotNull(Contact.Birthdate));
     assertEquals('Name IN :inValues', bb().isIn(Account.Name, ':inValues'));
+    assertEquals('Birthdate IN :inValues', bb().isIn(Contact.Birthdate, ':inValues'));
     assertEquals('Name NOT IN :inValues', bb().isNotIn(Account.Name, ':inValues'));
+    assertEquals('Birthdate NOT IN :inValues', bb().isNotIn(Contact.Birthdate, ':inValues'));
     assertEquals('Name LIKE :likeValue', bb().isLike(Account.Name, ':likeValue'));
     assertEquals('(NOT Name LIKE :likeValue)', bb().isNotLike(Account.Name, ':likeValue'));
   }
 
   @isTest
   static void bindingBuilderFailsIfNotWithStringArgument() {
-    Integer numberOfMethodsToCheck = 6;
+    Integer numberOfMethodsToCheck = 8;
     Integer numberOfMethodsChecked = 0;
     for (Integer i = 0; i < numberOfMethodsToCheck; i++) {
       try {
@@ -178,6 +247,12 @@ private class tmo_soqlCriteriaBuilderTest {
           }
           when 5 {
             bb().lessOrEqual(Account.NumberOfEmployees, 100);
+          }
+          when 6 {
+            bb().isIn(Account.NumberOfEmployees, new List<Integer>{ 100 });
+          }
+          when 7 {
+            bb().isNotIn(Account.NumberOfEmployees, new List<Integer>{ 100 });
           }
           when else {
             System.assert(false, 'uncreachable: expected number of methods to be checked');
