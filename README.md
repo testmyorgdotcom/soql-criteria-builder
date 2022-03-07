@@ -9,52 +9,37 @@ Addresses necessity to build criteria as String for [fflib_QueryFactory#setCondi
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
 </a>
 
-## Benefits
-
-- Supports all [Comparison Operators](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm)
-- Compile Time validation of the Field Names used in SOQL Criteria
-- Dynamic SOQL Criteria based on User input
-- Bind Variables
-
 ## Examples
-
-Below examples are built under assumption of the following factory method presence:
-
-```java
-private static tmo_soqlCriteriaBuilder cb() {
-    return tmo_soqlCriteriaBuilder.stringCriteriaBuilder();
-}
-```
 
 ### Simple Criteria
 
 ```java
-String criteriaAsString = 'AccountId != NULL AND (NOT LastName LIKE \'A%\') AND Department = \'Finance\'';
+String simpleCriteria = 'AccountId != NULL AND (NOT LastName LIKE \'A%\') AND Department = \'Finance\'';
 
 tmo_soqlCriteriaBuilder cb = cb()
     .isNotNull(Contact.AccountId)
-    .isNotLike(Contact.LastName, 'A%')
+    .isNotLike(Contact.LastName, 'Aza%')
     .equalsTo(Contact.Department, 'Finance');
 
-System.assertEquals(criteriaAsString, cb.toCriteria());
+System.assertEquals(simpleCriteria, cb.toCriteria());
 ```
 
 ### Between Criteria
 
 ```java
-String criteriaAsString = 'NumberOfEmployees > 1000 AND NumberOfEmployees < 2000';
+String betweenCriteria = 'NumberOfEmployees > 1000 AND NumberOfEmployees < 2000';
 
 tmo_soqlCriteriaBuilder cb = cb()
     .greaterThan(Account.NumberOfEmployees, 1000)
     .lessThan(Account.NumberOfEmployees, 2000);
 
-System.assertEquals(criteriaAsString, cb.toCriteria());
+System.assertEquals(betweenCriteria, cb.toCriteria());
 ```
 
 ### Dynamic Criteria
 
 ```java
-String criteriaAsString = 'Title != NULL AND AccountId != NULL AND (Account.NumberOfEmployees > 9)';
+String dynamicCriteria = 'Title != NULL AND AccountId != NULL AND (Account.NumberOfEmployees > 9)';
 
 Boolean userRequestedBigCompaniesOnly = true;
 tmo_soqlCriteriaBuilder cb = cb().isNotNull(Contact.Title);
@@ -68,13 +53,13 @@ if(userRequestedBigCompaniesOnly) {
         );
 }
 
-System.assertEquals(criteriaAsString, cb.toCriteria());
+System.assertEquals(dynamicCriteria, cb.toCriteria());
 ```
 
 ### Complex Criteria
 
 ```java
-String criteriaAsString = 'IsWon = true AND Amount > 100000 AND'
+String complexCriteria = 'IsWon = true AND Amount > 100000 AND'
     + ' ((Account.NumberOfEmployees > 1000 AND Account.BillingCountry = \'USA\') OR (Owner.Title = \'CEO\' AND Owner.Country = \'USA\'))';
 
 tmo_soqlCriteriaBuilder bigUsCompanies = cb()
@@ -97,8 +82,38 @@ tmo_soqlCriteriaBuilder cb = cb()
             .composite(ownerInUs)
     );
 
-System.assertEquals(criteriaAsString, cb.toCriteria());
+System.assertEquals(complexCriteria, cb.toCriteria());
 ```
+
+### Criteria with Date Functions
+
+```java
+String dateFunctionCriteria = 'CALENDAR_MONTH(Birthdate) > 1';
+
+tmo_soqlCriteriaBuilder cb = cb().greaterThan(CALENDAR_MONTH(Contact.Birthdate), 1');
+
+System.assertEquals(dateFunctionCriteria, cb.toCriteria());
+```
+
+Examples were built under assumption of the following factory methods presence:
+
+```java
+private static tmo_soqlCriteriaBuilder cb() {
+    return tmo_soqlCriteriaBuilder.stringCriteriaBuilder();
+}
+
+private static tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
+    return tmo_soqlDateFunction.dateFunction(tmo_soqlDateFunction.DateFunction.CALENDAR_MONTH, field);
+}
+```
+
+## Benefits
+
+- Supports all [Comparison Operators](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm)
+- Compile Time validation of the Field Names used in SOQL Criteria
+- Dynamic SOQL Criteria based on User input
+- Bind Variables
+- [Date Functions](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm) support
 
 ## Additional Thoughts
 

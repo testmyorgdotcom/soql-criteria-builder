@@ -26,6 +26,11 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void equalsToCriteriaForDateFunction() {
+    assertEquals('CALENDAR_MONTH(Birthdate) = 12', cb().equalsTo(CALENDAR_MONTH(Contact.Birthdate), 12));
+  }
+
+  @isTest
   static void notEqualsToCriteriaForString() {
     assertEquals('Name != \'microsoft\'', cb().notEqualsTo(Account.Name, 'microsoft'));
   }
@@ -46,6 +51,11 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void notEqualsToCriteriaForDateFunction() {
+    assertEquals('CALENDAR_MONTH(Birthdate) != 1', cb().notEqualsTo(CALENDAR_MONTH(Contact.Birthdate), 1));
+  }
+
+  @isTest
   static void greaterOrEqualCriteriaForNumeric() {
     assertEquals('TotalOpportunityQuantity >= 2', cb().greaterOrEqual(Opportunity.TotalOpportunityQuantity, 2));
   }
@@ -58,6 +68,11 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void greaterOrEqualCriteriaForDateString() {
     assertEquals('Birthdate >= 1995-05-21', cb().greaterOrEqual(Contact.Birthdate, '1995-05-21'));
+  }
+
+  @isTest
+  static void greaterOrEqualCriteriaForDateFunction() {
+    assertEquals('CALENDAR_MONTH(Birthdate) >= 1', cb().greaterOrEqual(CALENDAR_MONTH(Contact.Birthdate), 1));
   }
 
   @isTest
@@ -76,6 +91,11 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void greaterThanCriteriaForDateFunction() {
+    assertEquals('CALENDAR_MONTH(Birthdate) > 1', cb().greaterThan(CALENDAR_MONTH(Contact.Birthdate), 1));
+  }
+
+  @isTest
   static void lessThanCriteriaForNumeric() {
     assertEquals('TotalOpportunityQuantity < 2', cb().lessThan(Opportunity.TotalOpportunityQuantity, 2));
   }
@@ -91,6 +111,11 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void lessThanCriteriaForDateFunction() {
+    assertEquals('CALENDAR_MONTH(Birthdate) < 6', cb().lessThan(CALENDAR_MONTH(Contact.Birthdate), 6));
+  }
+
+  @isTest
   static void lessOrEqualCriteriaForNumeric() {
     assertEquals('TotalOpportunityQuantity <= 2', cb().lessOrEqual(Opportunity.TotalOpportunityQuantity, 2));
   }
@@ -103,6 +128,11 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void lessOrEqualCriteriaForDateString() {
     assertEquals('Birthdate <= 1995-05-21', cb().lessOrEqual(Contact.Birthdate, '1995-05-21'));
+  }
+
+  @isTest
+  static void lessOrEqualCriteriaForDateFunction() {
+    assertEquals('CALENDAR_MONTH(Birthdate) <= 6', cb().lessOrEqual(CALENDAR_MONTH(Contact.Birthdate), 6));
   }
 
   @isTest
@@ -124,6 +154,12 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void inCriteriaForDateFunction() {
+    List<Integer> inValues = new List<Integer>{ 1, 2, 3 };
+    assertEquals('CALENDAR_MONTH(Birthdate) IN (1,2,3)', cb().isIn(CALENDAR_MONTH(Contact.Birthdate), inValues));
+  }
+
+  @isTest
   static void notInCriteriaForSubSelect() {
     String subSelect = 'SELECT Id FROM Account';
     assertEquals('AccountId NOT IN (SELECT Id FROM Account)', cb().isNotIn(Contact.AccountId, subSelect));
@@ -139,6 +175,12 @@ private class tmo_soqlCriteriaBuilderTest {
   static void notInCriteriaForNonStrings() {
     List<Integer> inValues = new List<Integer>{ 1, 2, 3 };
     assertEquals('NumberOfEmployees NOT IN (1,2,3)', cb().isNotIn(Account.NumberOfEmployees, inValues));
+  }
+
+  @isTest
+  static void notInCriteriaForDateFunction() {
+    List<Integer> inValues = new List<Integer>{ 1, 2, 3 };
+    assertEquals('CALENDAR_MONTH(Birthdate) NOT IN (1,2,3)', cb().isNotIn(CALENDAR_MONTH(Contact.Birthdate), inValues));
   }
 
   @isTest
@@ -185,6 +227,16 @@ private class tmo_soqlCriteriaBuilderTest {
         .configureForReferenceField(Contact.AccountId)
         .isNotNull(Account.Industry)
         .greaterOrEqual(Account.NumberOfEmployees, 100)
+    );
+  }
+
+  @isTest
+  static void dateFunctionCriteriaBasedOnReferenceAttributes() {
+    assertEquals(
+      'CALENDAR_MONTH(Opportunity.CloseDate) = 3',
+      cb()
+        .configureForReferenceField(OpportunityLineItem.OpportunityId)
+        .equalsTo(CALENDAR_MONTH(Opportunity.CloseDate), 3)
     );
   }
 
@@ -311,5 +363,9 @@ private class tmo_soqlCriteriaBuilderTest {
 
   private static void assertEquals(String expectedCriteria, tmo_soqlCriteriaBuilder criteriaBuilder) {
     System.assertEquals(expectedCriteria, criteriaBuilder.toCriteria());
+  }
+
+  private static tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
+    return tmo_soqlDateFunction.dateFunction(tmo_soqlDateFunction.DateFunction.CALENDAR_MONTH, field);
   }
 }
