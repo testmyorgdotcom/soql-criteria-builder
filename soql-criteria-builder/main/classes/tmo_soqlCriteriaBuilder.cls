@@ -1,8 +1,12 @@
 public inherited sharing virtual class tmo_soqlCriteriaBuilder {
+  private static final Integer WHERE_CLAUSE_LIMIT = 4000;
+  private static final String AND_JOIN = 'AND';
+  private static final String OR_JOIN = 'OR';
   private String referenceFieldNamePreffix;
   private List<String> criteria;
   private List<Boolean> trueIfAndJoinElements;
   private Boolean nextJoinFlagValue;
+  private Integer criteriaSize = 0;
 
   private tmo_soqlCriteriaBuilder() {
     referenceFieldNamePreffix = null;
@@ -32,7 +36,7 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     while (criteriaIterator.hasNext()) {
       finalCriteriaElements.add(criteriaIterator.next());
       if (joinIterator.hasNext()) {
-        finalCriteriaElements.add(joinIterator.next() ? 'AND' : 'OR');
+        finalCriteriaElements.add(joinIterator.next() ? AND_JOIN : OR_JOIN);
       }
     }
     return String.join(finalCriteriaElements, ' ');
@@ -236,10 +240,23 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
 
   private void addCriteria(String criterion) {
     if (!criteria.isEmpty()) {
+      updateSizeWithJoinElementSize(nextJoinFlagValue);
       trueIfAndJoinElements.add(nextJoinFlagValue);
       withAnd();
     }
     criteria.add(criterion);
+    failIfLimitBreached(criterion);
+  }
+
+  private void updateSizeWithJoinElementSize(Boolean trueIfAndJoinElement) {
+    criteriaSize += (nextJoinFlagValue ? AND_JOIN.length() : OR_JOIN.length()) + 2;
+  }
+
+  private void failIfLimitBreached(String criterion) {
+    criteriaSize += criterion.length();
+    if (WHERE_CLAUSE_LIMIT < criteriaSize) {
+      throw new tmo_WhereClauseLimitException();
+    }
   }
 
   private inherited sharing class tmo_bindingSoqlCriteriaBuilder extends tmo_soqlCriteriaBuilder {
@@ -258,5 +275,8 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
         throw new IllegalArgumentException('binding builder can work with Binding Variables only');
       }
     }
+  }
+
+  public class tmo_WhereClauseLimitException extends Exception {
   }
 }
