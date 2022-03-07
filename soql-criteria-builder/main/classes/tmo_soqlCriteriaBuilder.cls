@@ -11,6 +11,10 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     nextJoinFlagValue = true;
   }
 
+  public static tmo_soqlCriteriaBuilder builder() {
+    return new tmo_soqlCriteriaBuilder();
+  }
+
   public tmo_soqlCriteriaBuilder withOr() {
     nextJoinFlagValue = false;
     return this;
@@ -67,7 +71,7 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
         value = formatDate(fieldValue);
       }
     } else {
-      value = wrapIntoQuotesIfString(fieldValue);
+      value = presentAsString(fieldValue);
     }
     return value;
   }
@@ -90,11 +94,13 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return oneTwoDigits > 9 ? '' + oneTwoDigits : '0' + oneTwoDigits;
   }
 
-  private String wrapIntoQuotesIfString(Object value) {
-    if (value instanceof String) {
-      return '\'' + value + '\'';
+  //TODO: rename function to reflect the intent
+  private String presentAsString(Object valueObj) {
+    String value = String.valueOf(valueObj);
+    if (valueObj instanceof String) {
+      return value.startsWith(':') ? value : '\'' + value + '\'';
     }
-    return '' + value;
+    return value;
   }
 
   public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
@@ -199,7 +205,7 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
   }
 
   private String convertToInString(List<Object> inValues) {
-    return wrapIntoQuotesIfString(String.join(inValues, '\',\''));
+    return presentAsString(String.join(inValues, '\',\''));
   }
 
   public tmo_soqlCriteriaBuilder composite(tmo_soqlCriteriaBuilder complexCriteria) {
@@ -234,14 +240,6 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
       withAnd();
     }
     criteria.add(criterion);
-  }
-
-  public static tmo_soqlCriteriaBuilder stringCriteriaBuilder() {
-    return new tmo_soqlCriteriaBuilder();
-  }
-
-  public static tmo_soqlCriteriaBuilder bindingBuilder() {
-    return new tmo_bindingSoqlCriteriaBuilder();
   }
 
   private inherited sharing class tmo_bindingSoqlCriteriaBuilder extends tmo_soqlCriteriaBuilder {

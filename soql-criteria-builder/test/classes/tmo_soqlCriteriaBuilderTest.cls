@@ -252,113 +252,39 @@ private class tmo_soqlCriteriaBuilderTest {
 
   @isTest
   static void bindingBuilderUsesBindingVariables() {
-    assertEquals('Name = :companyName', bb().equalsTo(Account.Name, ':companyName'));
-    assertEquals('Name != :companyName', bb().notEqualsTo(Account.Name, ':companyName'));
-    assertEquals('Birthdate = :birthDate', bb().equalsTo(Contact.Birthdate, ':birthDate'));
-    assertEquals('NumberOfEmployees > :value', bb().greaterThan(Account.NumberOfEmployees, ':value'));
-    assertEquals('Birthdate > :birthDate', bb().greaterThan(Contact.Birthdate, ':birthDate'));
-    assertEquals('NumberOfEmployees >= :value', bb().greaterOrEqual(Account.NumberOfEmployees, ':value'));
-    assertEquals('Birthdate >= :birthDate', bb().greaterOrEqual(Contact.Birthdate, ':birthDate'));
-    assertEquals('NumberOfEmployees < :value', bb().lessThan(Account.NumberOfEmployees, ':value'));
-    assertEquals('Birthdate < :birthDate', bb().lessThan(Contact.Birthdate, ':birthDate'));
-    assertEquals('NumberOfEmployees <= :value', bb().lessOrEqual(Account.NumberOfEmployees, ':value'));
-    assertEquals('Birthdate <= :birthDate', bb().lessOrEqual(Contact.Birthdate, ':birthDate'));
-    assertEquals('Name = NULL', bb().isNull(Account.Name));
-    assertEquals('Birthdate = NULL', bb().isNull(Contact.Birthdate));
-    assertEquals('Name != NULL', bb().isNotNull(Account.Name));
-    assertEquals('Birthdate != NULL', bb().isNotNull(Contact.Birthdate));
-    assertEquals('Name IN :inValues', bb().isIn(Account.Name, ':inValues'));
-    assertEquals('Birthdate IN :inValues', bb().isIn(Contact.Birthdate, ':inValues'));
-    assertEquals('Name NOT IN :inValues', bb().isNotIn(Account.Name, ':inValues'));
-    assertEquals('Birthdate NOT IN :inValues', bb().isNotIn(Contact.Birthdate, ':inValues'));
-    assertEquals('Name LIKE :likeValue', bb().isLike(Account.Name, ':likeValue'));
-    assertEquals('(NOT Name LIKE :likeValue)', bb().isNotLike(Account.Name, ':likeValue'));
+    assertEquals('Name = :companyName', cb().equalsTo(Account.Name, ':companyName'));
+    assertEquals('Name != :companyName', cb().notEqualsTo(Account.Name, ':companyName'));
+    assertEquals('Birthdate = :birthDate', cb().equalsTo(Contact.Birthdate, ':birthDate'));
+    assertEquals('NumberOfEmployees > :value', cb().greaterThan(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate > :birthDate', cb().greaterThan(Contact.Birthdate, ':birthDate'));
+    assertEquals('NumberOfEmployees >= :value', cb().greaterOrEqual(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate >= :birthDate', cb().greaterOrEqual(Contact.Birthdate, ':birthDate'));
+    assertEquals('NumberOfEmployees < :value', cb().lessThan(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate < :birthDate', cb().lessThan(Contact.Birthdate, ':birthDate'));
+    assertEquals('NumberOfEmployees <= :value', cb().lessOrEqual(Account.NumberOfEmployees, ':value'));
+    assertEquals('Birthdate <= :birthDate', cb().lessOrEqual(Contact.Birthdate, ':birthDate'));
+    assertEquals('Name = NULL', cb().isNull(Account.Name));
+    assertEquals('Birthdate = NULL', cb().isNull(Contact.Birthdate));
+    assertEquals('Name != NULL', cb().isNotNull(Account.Name));
+    assertEquals('Birthdate != NULL', cb().isNotNull(Contact.Birthdate));
+    assertEquals('Name IN (:inValues)', cb().isIn(Account.Name, ':inValues'));
+    assertEquals('Birthdate IN (:inValues)', cb().isIn(Contact.Birthdate, ':inValues'));
+    assertEquals('Name NOT IN (:inValues)', cb().isNotIn(Account.Name, ':inValues'));
+    assertEquals('Birthdate NOT IN (:inValues)', cb().isNotIn(Contact.Birthdate, ':inValues'));
+    assertEquals('Name LIKE :likeValue', cb().isLike(Account.Name, ':likeValue'));
+    assertEquals('(NOT Name LIKE :likeValue)', cb().isNotLike(Account.Name, ':likeValue'));
   }
 
   @isTest
-  static void bindingBuilderFailsIfNotWithStringArgument() {
-    Integer numberOfMethodsToCheck = 8;
-    Integer numberOfMethodsChecked = 0;
-    for (Integer i = 0; i < numberOfMethodsToCheck; i++) {
-      try {
-        switch on i {
-          when 0 {
-            bb().equalsTo(Account.NumberOfEmployees, 100);
-          }
-          when 1 {
-            bb().notEqualsTo(Account.NumberOfEmployees, 100);
-          }
-          when 2 {
-            bb().greaterThan(Account.NumberOfEmployees, 100);
-          }
-          when 3 {
-            bb().greaterOrEqual(Account.NumberOfEmployees, 100);
-          }
-          when 4 {
-            bb().lessThan(Account.NumberOfEmployees, 100);
-          }
-          when 5 {
-            bb().lessOrEqual(Account.NumberOfEmployees, 100);
-          }
-          when 6 {
-            bb().isIn(Account.NumberOfEmployees, new List<Integer>{ 100 });
-          }
-          when 7 {
-            bb().isNotIn(Account.NumberOfEmployees, new List<Integer>{ 100 });
-          }
-          when else {
-            System.assert(false, 'uncreachable: expected number of methods to be checked');
-          }
-        }
-      } catch (IllegalArgumentException iae) {
-        numberOfMethodsChecked++;
-      }
-    }
-    System.assertEquals(numberOfMethodsToCheck, numberOfMethodsChecked, 'should fail on all non binding methods');
-  }
-
-  @isTest
-  static void bindingBuilderFailsIfNotWithBindingVariable() {
-    Integer numberOfMethodsToCheck = 6;
-    Integer numberOfMethodsChecked = 0;
-    for (Integer i = 0; i < numberOfMethodsToCheck; i++) {
-      try {
-        switch on i {
-          when 0 {
-            bb().equalsTo(Account.Name, 'salesforce');
-          }
-          when 1 {
-            bb().notEqualsTo(Account.Name, 'salesforce');
-          }
-          when 2 {
-            bb().greaterThan(Account.NumberOfEmployees, '100');
-          }
-          when 3 {
-            bb().greaterOrEqual(Account.NumberOfEmployees, '100');
-          }
-          when 4 {
-            bb().lessThan(Account.NumberOfEmployees, '100');
-          }
-          when 5 {
-            bb().lessOrEqual(Account.NumberOfEmployees, '100');
-          }
-          when else {
-            System.assert(false, 'uncreachable: expected number of methods to be checked');
-          }
-        }
-      } catch (IllegalArgumentException iae) {
-        numberOfMethodsChecked++;
-      }
-    }
-    System.assertEquals(numberOfMethodsToCheck, numberOfMethodsChecked, 'should fail on all non binding methods');
+  static void combinesStaticValuesAndBindingVariables() {
+    assertEquals(
+      'Department LIKE \'Finance%\' AND Email = :theEmail',
+      cb().isLike(Contact.Department, 'Finance%').equalsTo(Contact.Email, ':theEmail')
+    );
   }
 
   private static tmo_soqlCriteriaBuilder cb() {
-    return tmo_soqlCriteriaBuilder.stringCriteriaBuilder();
-  }
-
-  private static tmo_soqlCriteriaBuilder bb() {
-    return tmo_soqlCriteriaBuilder.bindingBuilder();
+    return tmo_soqlCriteriaBuilder.builder();
   }
 
   private static void assertEquals(String expectedCriteria, tmo_soqlCriteriaBuilder criteriaBuilder) {

@@ -45,6 +45,6 @@ private class tmo_soqlCriteriaBuilderDemoTest {
   }
 
   private static tmo_soqlCriteriaBuilder cb() {
-    return tmo_soqlCriteriaBuilder.stringCriteriaBuilder();
+    return tmo_soqlCriteriaBuilder.builder();
   }
 }
