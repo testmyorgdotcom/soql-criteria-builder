@@ -114,6 +114,7 @@ private static tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
 - Dynamic SOQL Criteria based on User input
 - Bind Variables
 - [Date Functions](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm) support
+- Runtime Exception if `criteria size` breaks the [4000 characters limit](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_conditionexpression.htm)
 
 ## Additional Thoughts
 
