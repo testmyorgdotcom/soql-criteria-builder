@@ -39,9 +39,18 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
+  public tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' = ' + fieldValue(field, fieldValue));
     return this;
+  }
+
+  public tmo_soqlCriteriaBuilder equalsTo(tmo_soqlDateFunction df, Integer fieldValue) {
+    addCriteria(dateFunction(df) + ' = ' + fieldValue);
+    return this;
+  }
+
+  private String dateFunction(tmo_soqlDateFunction df) {
+    return df.dateFunction + wrapIntoBrackets(fieldName(df.field));
   }
 
   private String fieldName(Schema.SObjectField field) {
@@ -49,10 +58,14 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return referenceFieldNamePreffix != null ? referenceFieldNamePreffix + fieldName : fieldName;
   }
 
-  private String fieldValue(Schema.SObjectField field, Object fieldValue) {
+  protected virtual String fieldValue(Schema.SObjectField field, Object fieldValue) {
     String value = null;
     if (Schema.DisplayType.DATE.equals(field.getDescribe().getType())) {
-      value = formatDate(fieldValue);
+      if (fieldValue instanceof Integer) {
+        value = String.valueOf(fieldValue);
+      } else {
+        value = formatDate(fieldValue);
+      }
     } else {
       value = wrapIntoQuotesIfString(fieldValue);
     }
@@ -61,7 +74,7 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
 
   private String formatDate(Object dateOrString) {
     if (dateOrString instanceof String) {
-      return '' + dateOrString;
+      return String.valueOf(dateOrString);
     } else {
       Date dateValue = (Date) dateOrString;
       List<String> dateParts = new List<String>{
@@ -84,18 +97,33 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return '' + value;
   }
 
-  public virtual tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
+  public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' != ' + fieldValue(field, fieldValue));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
+  public tmo_soqlCriteriaBuilder notEqualsTo(tmo_soqlDateFunction df, Integer fieldValue) {
+    addCriteria(dateFunction(df) + ' != ' + fieldValue(df.field, fieldValue));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' >= ' + fieldValue(field, fieldValue));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
+  public tmo_soqlCriteriaBuilder greaterOrEqual(tmo_soqlDateFunction df, Object fieldValue) {
+    addCriteria(dateFunction(df) + ' >= ' + fieldValue(df.field, fieldValue));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' > ' + fieldValue(field, fieldValue));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder greaterThan(tmo_soqlDateFunction df, Object fieldValue) {
+    addCriteria(dateFunction(df) + ' > ' + fieldValue(df.field, fieldValue));
     return this;
   }
 
@@ -104,28 +132,58 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
+  public virtual tmo_soqlCriteriaBuilder lessThan(tmo_soqlDateFunction df, Object fieldValue) {
+    addCriteria(dateFunction(df) + ' < ' + fieldValue(df.field, fieldValue));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' <= ' + fieldValue(field, fieldValue));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, List<Object> inValues) {
-    addCriteria(fieldName(field) + ' IN ' + wrapIntoBrackets(convertToInValuesAsString(inValues)));
+  public tmo_soqlCriteriaBuilder lessOrEqual(tmo_soqlDateFunction df, Object fieldValue) {
+    addCriteria(dateFunction(df) + ' <= ' + fieldValue(df.field, fieldValue));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String subSelect) {
-    addCriteria(fieldName(field) + ' IN ' + wrapIntoBrackets(subSelect));
+  public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, List<Object> inValues) {
+    addCriteria(fieldName(field) + ' IN ' + fieldInValue(field, inValues));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, List<Object> inValues) {
-    addCriteria(fieldName(field) + ' NOT IN ' + wrapIntoBrackets(convertToInValuesAsString(inValues)));
+  protected virtual String fieldInValue(Schema.SObjectField field, Object inValues) {
+    String value = null;
+    if (inValues instanceof List<Object>) {
+      value = wrapIntoBrackets(convertToInValuesAsString((List<Object>) inValues));
+    } else if (inValues instanceof String) {
+      value = wrapIntoBrackets(String.valueOf(inValues));
+    }
+    return value;
+  }
+
+  public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String subSelect) {
+    addCriteria(fieldName(field) + ' IN ' + fieldInValue(field, subSelect));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String subSelect) {
-    addCriteria(fieldName(field) + ' NOT IN ' + wrapIntoBrackets(subSelect));
+  public tmo_soqlCriteriaBuilder isIn(tmo_soqlDateFunction df, List<Integer> inValues) {
+    addCriteria(dateFunction(df) + ' IN ' + fieldInValue(df.field, inValues));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, List<Object> inValues) {
+    addCriteria(fieldName(field) + ' NOT IN ' + fieldInValue(field, inValues));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String subSelect) {
+    addCriteria(fieldName(field) + ' NOT IN ' + fieldInValue(field, subSelect));
+    return this;
+  }
+
+  public tmo_soqlCriteriaBuilder isNotIn(tmo_soqlDateFunction df, List<Integer> inValues) {
+    addCriteria(dateFunction(df) + ' NOT IN ' + fieldInValue(df.field, inValues));
     return this;
   }
 
@@ -149,13 +207,13 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, String fieldValue) {
-    addCriteria(fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue));
+  public tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, String fieldValue) {
+    addCriteria(fieldName(field) + ' LIKE ' + fieldValue(field, fieldValue));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, String fieldValue) {
-    String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + wrapIntoQuotesIfString(fieldValue);
+  public tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, String fieldValue) {
+    String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + fieldValue(field, fieldValue);
     addCriteria(wrapIntoBrackets(singleCriteria));
     return this;
   }
@@ -187,76 +245,20 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
   }
 
   private inherited sharing class tmo_bindingSoqlCriteriaBuilder extends tmo_soqlCriteriaBuilder {
-    public override tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
+    protected override String fieldValue(Schema.SObjectField field, Object fieldValue) {
       failIfNotBindingVariable(fieldValue);
-      addCriteria(fieldName(field) + ' = ' + fieldValue);
-      return this;
+      return String.valueOf(fieldValue);
+    }
+
+    protected override String fieldInValue(Schema.SObjectField field, Object inValues) {
+      failIfNotBindingVariable(inValues);
+      return String.valueOf(inValues);
     }
 
     private void failIfNotBindingVariable(Object fieldValue) {
       if (!(fieldValue instanceof String) || !fieldValue?.toString().startsWith(':')) {
         throw new IllegalArgumentException('binding builder can work with Binding Variables only');
       }
-    }
-
-    public override tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      addCriteria(fieldName(field) + ' != ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      addCriteria(fieldName(field) + ' >= ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      addCriteria(fieldName(field) + ' > ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      addCriteria(fieldName(field) + ' < ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      addCriteria(fieldName(field) + ' <= ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String fieldValue) {
-      addCriteria(fieldName(field) + ' IN ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, List<Object> fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String fieldValue) {
-      addCriteria(fieldName(field) + ' NOT IN ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, List<Object> fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, String fieldValue) {
-      addCriteria(fieldName(field) + ' LIKE ' + fieldValue);
-      return this;
-    }
-
-    public override tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, String fieldValue) {
-      addCriteria(wrapIntoBrackets('NOT ' + fieldName(field) + ' LIKE ' + fieldValue));
-      return this;
     }
   }
 }
