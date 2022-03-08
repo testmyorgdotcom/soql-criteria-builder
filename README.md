@@ -121,15 +121,7 @@ private static tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
 Prefer queries with `:bindVariables` instead of dynamically built ones.  
 Underlying databases (e.g. [Oracle](https://blogs.oracle.com/sql/post/improve-sql-query-performance-by-using-bind-variables)) will create additional plan for every similar query built dynamically. This will decrease performance of the database and will require additional resources to optimize it in the background.
 
-Below examples are built under assumption of the following factory method presence:
-
 ```java
-private static tmo_soqlCriteriaBuilder bb() {
-    return tmo_soqlCriteriaBuilder.bindingBuilder();
-}
-```
-
-```java
-assertEquals('Name = :companyName', bb().equalsTo(Account.Name, ':companyName'));
-assertEquals('Name IN :inValues', bb().isIn(Account.Name, ':inValues'));
+assertEquals('Name = :companyName', cb().equalsTo(Account.Name, ':companyName'));
+assertEquals('Name IN :inValues', cb().isIn(Account.Name, ':inValues'));
 ```

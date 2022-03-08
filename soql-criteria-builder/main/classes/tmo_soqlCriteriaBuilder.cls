@@ -1,18 +1,19 @@
 public inherited sharing virtual class tmo_soqlCriteriaBuilder {
-  private static final Integer WHERE_CLAUSE_LIMIT = 4000;
   private static final String AND_JOIN = 'AND';
   private static final String OR_JOIN = 'OR';
+  private static final String EXPRESSION_JOIN = ' ';
   private String referenceFieldNamePreffix;
   private List<String> criteria;
   private List<Boolean> trueIfAndJoinElements;
   private Boolean nextJoinFlagValue;
-  private Integer criteriaSize = 0;
+  private CriteriaSize sizeMonitor;
 
   private tmo_soqlCriteriaBuilder() {
     referenceFieldNamePreffix = null;
     criteria = new List<String>();
     trueIfAndJoinElements = new List<Boolean>();
     nextJoinFlagValue = true;
+    sizeMonitor = new CriteriaSize();
   }
 
   public static tmo_soqlCriteriaBuilder builder() {
@@ -39,7 +40,7 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
         finalCriteriaElements.add(joinIterator.next() ? AND_JOIN : OR_JOIN);
       }
     }
-    return String.join(finalCriteriaElements, ' ');
+    return String.join(finalCriteriaElements, EXPRESSION_JOIN);
   }
 
   public tmo_soqlCriteriaBuilder configureForReferenceField(Schema.SObjectField referenceField) {
@@ -50,15 +51,6 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
   public tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' = ' + fieldValue(field, fieldValue));
     return this;
-  }
-
-  public tmo_soqlCriteriaBuilder equalsTo(tmo_soqlDateFunction df, Integer fieldValue) {
-    addCriteria(dateFunction(df) + ' = ' + fieldValue);
-    return this;
-  }
-
-  private String dateFunction(tmo_soqlDateFunction df) {
-    return df.dateFunction + wrapIntoBrackets(fieldName(df.field));
   }
 
   private String fieldName(Schema.SObjectField field) {
@@ -105,6 +97,15 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
       return value.startsWith(':') ? value : '\'' + value + '\'';
     }
     return value;
+  }
+
+  public tmo_soqlCriteriaBuilder equalsTo(tmo_soqlDateFunction df, Integer fieldValue) {
+    addCriteria(dateFunction(df) + ' = ' + fieldValue);
+    return this;
+  }
+
+  private String dateFunction(tmo_soqlDateFunction df) {
+    return df.dateFunction + wrapIntoBrackets(fieldName(df.field));
   }
 
   public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
@@ -240,39 +241,32 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
 
   private void addCriteria(String criterion) {
     if (!criteria.isEmpty()) {
-      updateSizeWithJoinElementSize(nextJoinFlagValue);
+      sizeMonitor.register(nextJoinFlagValue);
       trueIfAndJoinElements.add(nextJoinFlagValue);
       withAnd();
     }
     criteria.add(criterion);
-    failIfLimitBreached(criterion);
+    sizeMonitor.register(criterion);
   }
 
-  private void updateSizeWithJoinElementSize(Boolean trueIfAndJoinElement) {
-    criteriaSize += (nextJoinFlagValue ? AND_JOIN.length() : OR_JOIN.length()) + 2;
-  }
+  private class CriteriaSize {
+    private final Integer whereLimit = 4000;
+    private Integer criteriaSize = 0;
 
-  private void failIfLimitBreached(String criterion) {
-    criteriaSize += criterion.length();
-    if (WHERE_CLAUSE_LIMIT < criteriaSize) {
-      throw new tmo_WhereClauseLimitException();
-    }
-  }
-
-  private inherited sharing class tmo_bindingSoqlCriteriaBuilder extends tmo_soqlCriteriaBuilder {
-    protected override String fieldValue(Schema.SObjectField field, Object fieldValue) {
-      failIfNotBindingVariable(fieldValue);
-      return String.valueOf(fieldValue);
+    private void register(Boolean trueIfAndJoinElement) {
+      criteriaSize += trueIfAndJoinElement ? AND_JOIN.length() : OR_JOIN.length();
+      criteriaSize += 2 * EXPRESSION_JOIN.length();
+      failIfLimitBreached();
     }
 
-    protected override String fieldInValue(Schema.SObjectField field, Object inValues) {
-      failIfNotBindingVariable(inValues);
-      return String.valueOf(inValues);
+    private void register(String criterion) {
+      criteriaSize += criterion.length();
+      failIfLimitBreached();
     }
 
-    private void failIfNotBindingVariable(Object fieldValue) {
-      if (!(fieldValue instanceof String) || !fieldValue?.toString().startsWith(':')) {
-        throw new IllegalArgumentException('binding builder can work with Binding Variables only');
+    private void failIfLimitBreached() {
+      if (whereLimit < criteriaSize) {
+        throw new tmo_WhereClauseLimitException();
       }
     }
   }
