@@ -288,7 +288,7 @@ private class tmo_soqlCriteriaBuilderTest {
     String criteria = 'CALENDAR_MONTH(Birthdate) = 1';
     String joinCondition = ' AND ';
     Integer theLimit = 4000;
-    Integer failOnIterationNumber = (theLimit + joinCondition.length()) / (joinCondition.length() + criteria.length());
+    Integer failOnIterationNumber = (theLimit + joinCondition.length()) / (criteria.length() + joinCondition.length());
     Boolean exceptionThrown = false;
     Integer latestIndex = 0;
     tmo_soqlCriteriaBuilder cb = cb();
