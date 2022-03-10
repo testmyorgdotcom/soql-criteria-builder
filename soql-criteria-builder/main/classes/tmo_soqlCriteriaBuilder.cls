@@ -61,16 +61,20 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   private String fieldValue(Schema.SObjectField field, Object fieldValue) {
     String value = null;
     if (Schema.DisplayType.DATE.equals(field.getDescribe().getType())) {
-      if (fieldValue instanceof Datetime) {
+      if (fieldValue instanceof Date) {
         value = formatDate(fieldValue);
-      } else {
+      } else if (fieldValue instanceof String) {
         value = String.valueOf(fieldValue);
+      } else {
+        throw new IllegalArgumentException();
       }
     } else if (Schema.DisplayType.DATETIME.equals(field.getDescribe().getType())) {
       if (fieldValue instanceof Datetime) {
         value = formatDatetime(fieldValue);
-      } else {
+      } else if (fieldValue instanceof String) {
         value = String.valueOf(fieldValue);
+      } else {
+        throw new IllegalArgumentException();
       }
     } else {
       value = presentAsString(fieldValue);
@@ -78,8 +82,8 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return value;
   }
 
-  private String formatDate(Object dateOrString) {
-    Date dateValue = (Date) dateOrString;
+  private String formatDate(Object dateObj) {
+    Date dateValue = (Date) dateObj;
     List<String> dateParts = new List<String>{
       withLeadingZero(dateValue.year()),
       withLeadingZero(dateValue.month()),
@@ -127,7 +131,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder notEqualsTo(tmo_soqlDateFunction df, Integer fieldValue) {
-    addCriteria(dateFunction(df) + ' != ' + fieldValue(df.field, fieldValue));
+    addCriteria(dateFunction(df) + ' != ' + fieldValue);
     return this;
   }
 
@@ -136,8 +140,8 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder greaterOrEqual(tmo_soqlDateFunction df, Object fieldValue) {
-    addCriteria(dateFunction(df) + ' >= ' + fieldValue(df.field, fieldValue));
+  public tmo_soqlCriteriaBuilder greaterOrEqual(tmo_soqlDateFunction df, Integer fieldValue) {
+    addCriteria(dateFunction(df) + ' >= ' + fieldValue);
     return this;
   }
 
@@ -146,8 +150,8 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder greaterThan(tmo_soqlDateFunction df, Object fieldValue) {
-    addCriteria(dateFunction(df) + ' > ' + fieldValue(df.field, fieldValue));
+  public tmo_soqlCriteriaBuilder greaterThan(tmo_soqlDateFunction df, Integer fieldValue) {
+    addCriteria(dateFunction(df) + ' > ' + fieldValue);
     return this;
   }
 
@@ -156,8 +160,8 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessThan(tmo_soqlDateFunction df, Object fieldValue) {
-    addCriteria(dateFunction(df) + ' < ' + fieldValue(df.field, fieldValue));
+  public tmo_soqlCriteriaBuilder lessThan(tmo_soqlDateFunction df, Integer fieldValue) {
+    addCriteria(dateFunction(df) + ' < ' + fieldValue);
     return this;
   }
 
@@ -166,8 +170,8 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessOrEqual(tmo_soqlDateFunction df, Object fieldValue) {
-    addCriteria(dateFunction(df) + ' <= ' + fieldValue(df.field, fieldValue));
+  public tmo_soqlCriteriaBuilder lessOrEqual(tmo_soqlDateFunction df, Integer fieldValue) {
+    addCriteria(dateFunction(df) + ' <= ' + fieldValue);
     return this;
   }
 
