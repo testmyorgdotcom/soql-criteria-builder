@@ -1,4 +1,4 @@
-public inherited sharing virtual class tmo_soqlCriteriaBuilder {
+public inherited sharing class tmo_soqlCriteriaBuilder {
   private static final String AND_JOIN = 'AND';
   private static final String OR_JOIN = 'OR';
   private static final String EXPRESSION_JOIN = ' ';
@@ -58,13 +58,19 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return referenceFieldNamePreffix != null ? referenceFieldNamePreffix + fieldName : fieldName;
   }
 
-  protected virtual String fieldValue(Schema.SObjectField field, Object fieldValue) {
+  private String fieldValue(Schema.SObjectField field, Object fieldValue) {
     String value = null;
     if (Schema.DisplayType.DATE.equals(field.getDescribe().getType())) {
-      if (fieldValue instanceof Integer) {
-        value = String.valueOf(fieldValue);
-      } else {
+      if (fieldValue instanceof Datetime) {
         value = formatDate(fieldValue);
+      } else {
+        value = String.valueOf(fieldValue);
+      }
+    } else if (Schema.DisplayType.DATETIME.equals(field.getDescribe().getType())) {
+      if (fieldValue instanceof Datetime) {
+        value = formatDatetime(fieldValue);
+      } else {
+        value = String.valueOf(fieldValue);
       }
     } else {
       value = presentAsString(fieldValue);
@@ -73,17 +79,24 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
   }
 
   private String formatDate(Object dateOrString) {
-    if (dateOrString instanceof String) {
-      return String.valueOf(dateOrString);
-    } else {
-      Date dateValue = (Date) dateOrString;
-      List<String> dateParts = new List<String>{
-        withLeadingZero(dateValue.year()),
-        withLeadingZero(dateValue.month()),
-        withLeadingZero(dateValue.day())
-      };
-      return String.join(dateParts, '-');
-    }
+    Date dateValue = (Date) dateOrString;
+    List<String> dateParts = new List<String>{
+      withLeadingZero(dateValue.year()),
+      withLeadingZero(dateValue.month()),
+      withLeadingZero(dateValue.day())
+    };
+    return String.join(dateParts, '-');
+  }
+
+  private String formatDatetime(Object dt) {
+    Datetime dateTimeValue = (Datetime) dt;
+    Time timeValue = dateTimeValue.timeGmt();
+    List<String> timeParts = new List<String>{
+      withLeadingZero(timeValue.hour()),
+      withLeadingZero(timeValue.minute()),
+      withLeadingZero(timeValue.second())
+    };
+    return formatDate(dateTimeValue.dateGmt()) + 'T' + String.join(timeParts, ':') + 'Z';
   }
 
   private String withLeadingZero(Integer oneTwoDigits) {
@@ -138,12 +151,12 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
+  public tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
     addCriteria(fieldName(field) + ' < ' + fieldValue(field, fieldValue));
     return this;
   }
 
-  public virtual tmo_soqlCriteriaBuilder lessThan(tmo_soqlDateFunction df, Object fieldValue) {
+  public tmo_soqlCriteriaBuilder lessThan(tmo_soqlDateFunction df, Object fieldValue) {
     addCriteria(dateFunction(df) + ' < ' + fieldValue(df.field, fieldValue));
     return this;
   }
@@ -163,7 +176,7 @@ public inherited sharing virtual class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  protected virtual String fieldInValue(Schema.SObjectField field, Object inValues) {
+  private String fieldInValue(Schema.SObjectField field, Object inValues) {
     String value = null;
     if (inValues instanceof List<Object>) {
       value = wrapIntoBrackets(convertToInValuesAsString((List<Object>) inValues));
