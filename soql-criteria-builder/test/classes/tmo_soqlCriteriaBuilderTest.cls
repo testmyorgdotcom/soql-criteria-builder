@@ -42,6 +42,12 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void equalsToCriteriaForDateLiteral() {
+    assertEquals('CreatedDate = TODAY', cb().equalsTo(Account.CreatedDate, 'TODAY'));
+    assertEquals('Birthdate = TODAY', cb().equalsTo(Contact.Birthdate, 'TODAY'));
+  }
+
+  @isTest
   static void notEqualsToCriteriaForString() {
     assertEquals('Name != \'microsoft\'', cb().notEqualsTo(Account.Name, 'microsoft'));
   }
@@ -327,7 +333,7 @@ private class tmo_soqlCriteriaBuilderTest {
     System.assertEquals(expectedCriteria, criteriaBuilder.toCriteria());
   }
 
-  private static tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
-    return tmo_soqlDateFunction.dateFunction(tmo_soqlDateFunction.DateFunction.CALENDAR_MONTH, field);
+  private static tmo_soqlCriteriaBuilder.tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
+    return tmo_soqlCriteriaBuilder.dateFunction(tmo_soqlCriteriaBuilder.DateFunction.CALENDAR_MONTH, field);
   }
 }
