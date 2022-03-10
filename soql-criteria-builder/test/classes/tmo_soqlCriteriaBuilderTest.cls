@@ -31,6 +31,17 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void dateFieldToFailIfInvalidArgument() {
+    Boolean exceptionWasThrown = false;
+    try {
+      cb().equalsTo(Contact.Birthdate, 12);
+    } catch (IllegalArgumentException iae) {
+      exceptionWasThrown = true;
+    }
+    System.assert(exceptionWasThrown, 'should fail when building criteria with integer value for Date field');
+  }
+
+  @isTest
   static void equalsToCriteriaForDatetime() {
     Datetime dateTimeValue = DateTime.newInstanceGMT(2022, 2, 24, 3, 12, 4);
     assertEquals('CreatedDate = 2022-02-24T03:12:04Z', cb().equalsTo(Account.CreatedDate, dateTimeValue));
@@ -39,6 +50,17 @@ private class tmo_soqlCriteriaBuilderTest {
   @isTest
   static void equalsToCriteriaForDatetimeString() {
     assertEquals('CreatedDate = 2022-02-24T03:12:04Z', cb().equalsTo(Account.CreatedDate, '2022-02-24T03:12:04Z'));
+  }
+
+  @isTest
+  static void dateTimeFieldToFailIfInvalidArgument() {
+    Boolean exceptionWasThrown = false;
+    try {
+      cb().equalsTo(Contact.CreatedDate, 12);
+    } catch (IllegalArgumentException iae) {
+      exceptionWasThrown = true;
+    }
+    System.assert(exceptionWasThrown, 'should fail when building criteria with integer value for Datetime field');
   }
 
   @isTest
