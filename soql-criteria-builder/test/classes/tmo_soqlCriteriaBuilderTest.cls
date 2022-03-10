@@ -31,6 +31,17 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
+  static void equalsToCriteriaForDatetime() {
+    Datetime dateTimeValue = DateTime.newInstanceGMT(2022, 2, 24, 3, 12, 4);
+    assertEquals('CreatedDate = 2022-02-24T03:12:04Z', cb().equalsTo(Account.CreatedDate, dateTimeValue));
+  }
+
+  @isTest
+  static void equalsToCriteriaForDatetimeString() {
+    assertEquals('CreatedDate = 2022-02-24T03:12:04Z', cb().equalsTo(Account.CreatedDate, '2022-02-24T03:12:04Z'));
+  }
+
+  @isTest
   static void notEqualsToCriteriaForString() {
     assertEquals('Name != \'microsoft\'', cb().notEqualsTo(Account.Name, 'microsoft'));
   }
@@ -251,26 +262,29 @@ private class tmo_soqlCriteriaBuilderTest {
   }
 
   @isTest
-  static void bindingBuilderUsesBindingVariables() {
+  static void usesBindingVariables() {
     assertEquals('Name = :companyName', cb().equalsTo(Account.Name, ':companyName'));
     assertEquals('Name != :companyName', cb().notEqualsTo(Account.Name, ':companyName'));
     assertEquals('Birthdate = :birthDate', cb().equalsTo(Contact.Birthdate, ':birthDate'));
+    assertEquals('CreatedDate = :createdDate', cb().equalsTo(Contact.CreatedDate, ':createdDate'));
     assertEquals('NumberOfEmployees > :value', cb().greaterThan(Account.NumberOfEmployees, ':value'));
     assertEquals('Birthdate > :birthDate', cb().greaterThan(Contact.Birthdate, ':birthDate'));
+    assertEquals('CreatedDate > :createdDate', cb().greaterThan(Contact.CreatedDate, ':createdDate'));
     assertEquals('NumberOfEmployees >= :value', cb().greaterOrEqual(Account.NumberOfEmployees, ':value'));
     assertEquals('Birthdate >= :birthDate', cb().greaterOrEqual(Contact.Birthdate, ':birthDate'));
+    assertEquals('CreatedDate >= :createdDate', cb().greaterOrEqual(Contact.CreatedDate, ':createdDate'));
     assertEquals('NumberOfEmployees < :value', cb().lessThan(Account.NumberOfEmployees, ':value'));
     assertEquals('Birthdate < :birthDate', cb().lessThan(Contact.Birthdate, ':birthDate'));
+    assertEquals('CreatedDate < :createdDate', cb().lessThan(Contact.CreatedDate, ':createdDate'));
     assertEquals('NumberOfEmployees <= :value', cb().lessOrEqual(Account.NumberOfEmployees, ':value'));
     assertEquals('Birthdate <= :birthDate', cb().lessOrEqual(Contact.Birthdate, ':birthDate'));
-    assertEquals('Name = NULL', cb().isNull(Account.Name));
-    assertEquals('Birthdate = NULL', cb().isNull(Contact.Birthdate));
-    assertEquals('Name != NULL', cb().isNotNull(Account.Name));
-    assertEquals('Birthdate != NULL', cb().isNotNull(Contact.Birthdate));
+    assertEquals('CreatedDate <= :createdDate', cb().lessOrEqual(Contact.CreatedDate, ':createdDate'));
     assertEquals('Name IN (:inValues)', cb().isIn(Account.Name, ':inValues'));
     assertEquals('Birthdate IN (:inValues)', cb().isIn(Contact.Birthdate, ':inValues'));
+    assertEquals('CreatedDate IN (:inValues)', cb().isIn(Contact.CreatedDate, ':inValues'));
     assertEquals('Name NOT IN (:inValues)', cb().isNotIn(Account.Name, ':inValues'));
     assertEquals('Birthdate NOT IN (:inValues)', cb().isNotIn(Contact.Birthdate, ':inValues'));
+    assertEquals('CreatedDate NOT IN (:inValues)', cb().isNotIn(Contact.CreatedDate, ':inValues'));
     assertEquals('Name LIKE :likeValue', cb().isLike(Account.Name, ':likeValue'));
     assertEquals('(NOT Name LIKE :likeValue)', cb().isNotLike(Account.Name, ':likeValue'));
   }
@@ -288,7 +302,7 @@ private class tmo_soqlCriteriaBuilderTest {
     String criteria = 'CALENDAR_MONTH(Birthdate) = 1';
     String joinCondition = ' AND ';
     Integer theLimit = 4000;
-    Integer failOnIterationNumber = (theLimit + joinCondition.length()) / (joinCondition.length() + criteria.length());
+    Integer failOnIterationNumber = (theLimit + joinCondition.length()) / (criteria.length() + joinCondition.length());
     Boolean exceptionThrown = false;
     Integer latestIndex = 0;
     tmo_soqlCriteriaBuilder cb = cb();
@@ -301,7 +315,7 @@ private class tmo_soqlCriteriaBuilderTest {
       exceptionThrown = true;
     }
 
-    System.assert(exceptionThrown, 'should throw exception if where clause exeeds 4000');
+    System.assert(exceptionThrown, 'should throw exception if "WHERE" clause exeeds 4000');
     System.assertEquals(failOnIterationNumber, latestIndex);
   }
 
