@@ -1,0 +1,27 @@
+name: CI
+
+# Controls when the workflow will run
+on:
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Navigate to checked out folder
+        run: cd $GITHUB_WORKSPACE
+        
+      - uses: sfdx-actions/setup-sfdx@v1
+        with:
+          sfdx-auth-url: ${{ secrets.TEST_SANDBOX }}        
+
+      - name: Validate Changes
+        run: |
+          sfdx force:source:deploy -p soql-criteria-builder -c -l RunSpecifiedTests \
+          -r tmo_soqlCriteriaBuilderTest,tmo_soqlCriteriaBuilderDemoTest
