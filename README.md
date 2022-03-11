@@ -18,7 +18,7 @@ String simpleCriteria = 'AccountId != NULL AND (NOT LastName LIKE \'A%\') AND De
 
 tmo_soqlCriteriaBuilder cb = cb()
     .isNotNull(Contact.AccountId)
-    .isNotLike(Contact.LastName, 'Aza%')
+    .isNotLike(Contact.LastName, 'A%')
     .equalsTo(Contact.Department, 'Finance');
 
 System.assertEquals(simpleCriteria, cb.toCriteria());
@@ -99,11 +99,11 @@ Examples were built under assumption of the following factory methods presence:
 
 ```java
 private static tmo_soqlCriteriaBuilder cb() {
-    return tmo_soqlCriteriaBuilder.stringCriteriaBuilder();
+    return tmo_soqlCriteriaBuilder.builder();
 }
 
-private static tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
-    return tmo_soqlDateFunction.dateFunction(tmo_soqlDateFunction.DateFunction.CALENDAR_MONTH, field);
+private static tmo_soqlCriteriaBuilder.tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
+    return tmo_soqlCriteriaBuilder.dateFunction(tmo_soqlCriteriaBuilder.DateFunction.CALENDAR_MONTH, field);
 }
 ```
 
@@ -118,7 +118,7 @@ private static tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
 
 ## Additional Thoughts
 
-Prefer queries with `:bindVariables` instead of dynamically built ones.  
+Prefer queries with `:bindVariables` instead of explicit values.  
 Underlying databases (e.g. [Oracle](https://blogs.oracle.com/sql/post/improve-sql-query-performance-by-using-bind-variables)) will create additional plan for every similar query built dynamically. This will decrease performance of the database and will require additional resources to optimize it in the background.
 
 ```java
