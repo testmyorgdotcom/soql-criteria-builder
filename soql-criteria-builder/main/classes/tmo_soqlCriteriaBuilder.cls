@@ -1,15 +1,15 @@
 public inherited sharing class tmo_soqlCriteriaBuilder {
   private static final String AND_JOIN = 'AND';
   private static final String OR_JOIN = 'OR';
-  private static final String EXPRESSION_JOIN = ' ';
-  private String referenceFieldNamePreffix;
+  private static final String ELEMENTS_JOIN = ' ';
+  private String referenceFieldName;
   private List<String> criteria;
   private List<Boolean> trueIfAndJoinElements;
   private Boolean nextJoinFlagValue;
   private CriteriaSize sizeMonitor;
 
   private tmo_soqlCriteriaBuilder() {
-    referenceFieldNamePreffix = null;
+    referenceFieldName = null;
     criteria = new List<String>();
     trueIfAndJoinElements = new List<Boolean>();
     nextJoinFlagValue = true;
@@ -31,59 +31,62 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public String toCriteria() {
-    List<String> finalCriteriaElements = new List<String>();
+    List<String> allCriteriaElements = new List<String>();
     Iterator<String> criteriaIterator = criteria.iterator();
     Iterator<Boolean> joinIterator = trueIfAndJoinElements.iterator();
     while (criteriaIterator.hasNext()) {
-      finalCriteriaElements.add(criteriaIterator.next());
+      allCriteriaElements.add(criteriaIterator.next());
       if (joinIterator.hasNext()) {
-        finalCriteriaElements.add(joinIterator.next() ? AND_JOIN : OR_JOIN);
+        allCriteriaElements.add(joinIterator.next() ? AND_JOIN : OR_JOIN);
       }
     }
-    return String.join(finalCriteriaElements, EXPRESSION_JOIN);
+    return String.join(allCriteriaElements, ELEMENTS_JOIN);
   }
 
   public tmo_soqlCriteriaBuilder configureForReferenceField(Schema.SObjectField referenceField) {
-    referenceFieldNamePreffix = referenceField.getDescribe().getRelationshipName() + '.';
+    referenceFieldName = referenceField.getDescribe().getRelationshipName();
     return this;
   }
 
   public tmo_soqlCriteriaBuilder equalsTo(Schema.SObjectField field, Object fieldValue) {
-    addCriteria(fieldName(field) + ' = ' + fieldValue(field, fieldValue));
+    addCriteria(field(field) + ' = ' + value(field, fieldValue));
     return this;
   }
 
-  private String fieldName(Schema.SObjectField field) {
+  private String field(Schema.SObjectField field) {
     String fieldName = field.getDescribe().getName();
-    return referenceFieldNamePreffix != null ? referenceFieldNamePreffix + fieldName : fieldName;
+    return referenceFieldName != null ? referenceFieldName + '.' + fieldName : fieldName;
   }
 
-  private String fieldValue(Schema.SObjectField field, Object fieldValue) {
+  private String value(Schema.SObjectField field, Object fieldValue) {
     String value = null;
-    if (Schema.DisplayType.DATE.equals(field.getDescribe().getType())) {
-      if (fieldValue instanceof Date) {
-        value = formatDate(fieldValue);
-      } else if (fieldValue instanceof String) {
-        value = String.valueOf(fieldValue);
-      } else {
-        throw new IllegalArgumentException();
+    switch on field.getDescribe().getType() {
+      when DATE {
+        value = dateValue(fieldValue);
       }
-    } else if (Schema.DisplayType.DATETIME.equals(field.getDescribe().getType())) {
-      if (fieldValue instanceof Datetime) {
-        value = formatDatetime(fieldValue);
-      } else if (fieldValue instanceof String) {
-        value = String.valueOf(fieldValue);
-      } else {
-        throw new IllegalArgumentException();
+      when DATETIME {
+        value = datetimeValue(fieldValue);
       }
-    } else {
-      value = presentAsString(fieldValue);
+      when else {
+        value = stringValue(fieldValue);
+      }
     }
     return value;
   }
 
-  private String formatDate(Object dateObj) {
-    Date dateValue = (Date) dateObj;
+  private String dateValue(Object fieldValue) {
+    String value = null;
+    if (fieldValue instanceof Date) {
+      value = formatDate((Date) fieldValue);
+    } else if (fieldValue instanceof String) {
+      value = String.valueOf(fieldValue);
+    } else {
+      throw new IllegalArgumentException();
+    }
+    return value;
+  }
+
+  private String formatDate(Date dateValue) {
     List<String> dateParts = new List<String>{
       withLeadingZero(dateValue.year()),
       withLeadingZero(dateValue.month()),
@@ -92,8 +95,23 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return String.join(dateParts, '-');
   }
 
-  private String formatDatetime(Object dt) {
-    Datetime dateTimeValue = (Datetime) dt;
+  private String withLeadingZero(Integer oneTwoDigits) {
+    return oneTwoDigits > 9 ? '' + oneTwoDigits : '0' + oneTwoDigits;
+  }
+
+  private String datetimeValue(Object fieldValue) {
+    String value = null;
+    if (fieldValue instanceof Datetime) {
+      value = formatDatetime((Datetime) fieldValue);
+    } else if (fieldValue instanceof String) {
+      value = String.valueOf(fieldValue);
+    } else {
+      throw new IllegalArgumentException();
+    }
+    return value;
+  }
+
+  private String formatDatetime(Datetime dateTimeValue) {
     Time timeValue = dateTimeValue.timeGmt();
     List<String> timeParts = new List<String>{
       withLeadingZero(timeValue.hour()),
@@ -103,17 +121,16 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return formatDate(dateTimeValue.dateGmt()) + 'T' + String.join(timeParts, ':') + 'Z';
   }
 
-  private String withLeadingZero(Integer oneTwoDigits) {
-    return oneTwoDigits > 9 ? '' + oneTwoDigits : '0' + oneTwoDigits;
-  }
-
-  //TODO: rename function to reflect the intent
-  private String presentAsString(Object valueObj) {
+  private String stringValue(Object valueObj) {
     String value = String.valueOf(valueObj);
     if (valueObj instanceof String) {
-      return value.startsWith(':') ? value : '\'' + value + '\'';
+      value = isBindingVariable(value) ? value : '\'' + value + '\'';
     }
     return value;
+  }
+
+  private Boolean isBindingVariable(String value) {
+    return value.startsWith(':');
   }
 
   public tmo_soqlCriteriaBuilder equalsTo(tmo_soqlDateFunction df, Integer fieldValue) {
@@ -122,11 +139,11 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   private String dateFunction(tmo_soqlDateFunction df) {
-    return df.dateFunction + wrapIntoBrackets(fieldName(df.field));
+    return df.dateFunction + wrapIntoBrackets(field(df.field));
   }
 
   public tmo_soqlCriteriaBuilder notEqualsTo(Schema.SObjectField field, Object fieldValue) {
-    addCriteria(fieldName(field) + ' != ' + fieldValue(field, fieldValue));
+    addCriteria(field(field) + ' != ' + value(field, fieldValue));
     return this;
   }
 
@@ -136,7 +153,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder greaterOrEqual(Schema.SObjectField field, Object fieldValue) {
-    addCriteria(fieldName(field) + ' >= ' + fieldValue(field, fieldValue));
+    addCriteria(field(field) + ' >= ' + value(field, fieldValue));
     return this;
   }
 
@@ -146,7 +163,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder greaterThan(Schema.SObjectField field, Object fieldValue) {
-    addCriteria(fieldName(field) + ' > ' + fieldValue(field, fieldValue));
+    addCriteria(field(field) + ' > ' + value(field, fieldValue));
     return this;
   }
 
@@ -156,7 +173,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder lessThan(Schema.SObjectField field, Object fieldValue) {
-    addCriteria(fieldName(field) + ' < ' + fieldValue(field, fieldValue));
+    addCriteria(field(field) + ' < ' + value(field, fieldValue));
     return this;
   }
 
@@ -166,7 +183,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder lessOrEqual(Schema.SObjectField field, Object fieldValue) {
-    addCriteria(fieldName(field) + ' <= ' + fieldValue(field, fieldValue));
+    addCriteria(field(field) + ' <= ' + value(field, fieldValue));
     return this;
   }
 
@@ -176,22 +193,22 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, List<Object> inValues) {
-    addCriteria(fieldName(field) + ' IN ' + fieldInValue(field, inValues));
+    addCriteria(field(field) + ' IN ' + fieldInValue(field, inValues));
     return this;
   }
 
   private String fieldInValue(Schema.SObjectField field, Object inValues) {
     String value = null;
     if (inValues instanceof List<Object>) {
-      value = wrapIntoBrackets(convertToInValuesAsString((List<Object>) inValues));
-    } else if (inValues instanceof String) {
-      value = wrapIntoBrackets(String.valueOf(inValues));
+      value = convertToInValuesAsString((List<Object>) inValues);
+    } else {
+      value = String.valueOf(inValues);
     }
-    return value;
+    return wrapIntoBrackets(value);
   }
 
   public tmo_soqlCriteriaBuilder isIn(Schema.SObjectField field, String subSelect) {
-    addCriteria(fieldName(field) + ' IN ' + fieldInValue(field, subSelect));
+    addCriteria(field(field) + ' IN ' + fieldInValue(field, subSelect));
     return this;
   }
 
@@ -201,12 +218,12 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, List<Object> inValues) {
-    addCriteria(fieldName(field) + ' NOT IN ' + fieldInValue(field, inValues));
+    addCriteria(field(field) + ' NOT IN ' + fieldInValue(field, inValues));
     return this;
   }
 
   public tmo_soqlCriteriaBuilder isNotIn(Schema.SObjectField field, String subSelect) {
-    addCriteria(fieldName(field) + ' NOT IN ' + fieldInValue(field, subSelect));
+    addCriteria(field(field) + ' NOT IN ' + fieldInValue(field, subSelect));
     return this;
   }
 
@@ -227,7 +244,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   private String convertToInString(List<Object> inValues) {
-    return presentAsString(String.join(inValues, '\',\''));
+    return stringValue(String.join(inValues, '\',\''));
   }
 
   public tmo_soqlCriteriaBuilder composite(tmo_soqlCriteriaBuilder complexCriteria) {
@@ -236,23 +253,23 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
   }
 
   public tmo_soqlCriteriaBuilder isLike(Schema.SObjectField field, String fieldValue) {
-    addCriteria(fieldName(field) + ' LIKE ' + fieldValue(field, fieldValue));
+    addCriteria(field(field) + ' LIKE ' + value(field, fieldValue));
     return this;
   }
 
   public tmo_soqlCriteriaBuilder isNotLike(Schema.SObjectField field, String fieldValue) {
-    String singleCriteria = 'NOT ' + fieldName(field) + ' LIKE ' + fieldValue(field, fieldValue);
+    String singleCriteria = 'NOT ' + field(field) + ' LIKE ' + value(field, fieldValue);
     addCriteria(wrapIntoBrackets(singleCriteria));
     return this;
   }
 
   public tmo_soqlCriteriaBuilder isNull(Schema.SObjectField field) {
-    addCriteria(fieldName(field) + ' = NULL');
+    addCriteria(field(field) + ' = NULL');
     return this;
   }
 
   public tmo_soqlCriteriaBuilder isNotNull(Schema.SObjectField field) {
-    addCriteria(fieldName(field) + ' != NULL');
+    addCriteria(field(field) + ' != NULL');
     return this;
   }
 
@@ -262,8 +279,8 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
       trueIfAndJoinElements.add(nextJoinFlagValue);
       withAnd();
     }
-    criteria.add(criterion);
     sizeMonitor.register(criterion);
+    criteria.add(criterion);
   }
 
   private class CriteriaSize {
@@ -272,7 +289,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
 
     private void register(Boolean trueIfAndJoinElement) {
       criteriaSize += trueIfAndJoinElement ? AND_JOIN.length() : OR_JOIN.length();
-      criteriaSize += 2 * EXPRESSION_JOIN.length();
+      criteriaSize += 2 * ELEMENTS_JOIN.length();
       failIfLimitBreached();
     }
 
