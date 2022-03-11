@@ -1,12 +1,11 @@
 name: CI
 
-# Controls when the workflow will run
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
   pull_request:
-    branches: [ main ]
+    branches: [main]
 
   workflow_dispatch:
 
@@ -19,10 +18,10 @@ jobs:
 
       - name: Navigate to checked out folder
         run: cd $GITHUB_WORKSPACE
-        
+
       - uses: sfdx-actions/setup-sfdx@v1
         with:
-          sfdx-auth-url: ${{ secrets.TEST_SANDBOX }}        
+          sfdx-auth-url: ${{ secrets.TEST_SANDBOX }}
 
       - name: Validate Changes
         run: |
