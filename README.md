@@ -1,6 +1,6 @@
 # SOQL Criteria Builder
 
-![build status](https://github.com/testmyorgdotcom/soql-criteria-builder/actions/workflows/blank.yml/badge.svg?branch=main)
+![build status](https://github.com/testmyorgdotcom/soql-criteria-builder/actions/workflows/main.yml/badge.svg?branch=main)
 
 DSL support for building SOQL WHERE Clause in an elegant way.  
 Inspired by [fflib_QueryFactory](https://github.com/apex-enterprise-patterns/fflib-apex-common/blob/master/sfdx-source/apex-common/main/classes/fflib_QueryFactory.cls).  
