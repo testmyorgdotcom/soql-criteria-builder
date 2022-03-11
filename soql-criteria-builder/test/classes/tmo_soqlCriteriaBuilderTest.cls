@@ -355,7 +355,7 @@ private class tmo_soqlCriteriaBuilderTest {
     System.assertEquals(expectedCriteria, criteriaBuilder.toCriteria());
   }
 
-  private static tmo_soqlCriteriaBuilder.tmo_soqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
+  private static tmo_soqlCriteriaBuilder.SoqlDateFunction CALENDAR_MONTH(Schema.SObjectField field) {
     return tmo_soqlCriteriaBuilder.dateFunction(tmo_soqlCriteriaBuilder.DateFunction.CALENDAR_MONTH, field);
   }
 }

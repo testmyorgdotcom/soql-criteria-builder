@@ -133,12 +133,12 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return value.startsWith(':');
   }
 
-  public tmo_soqlCriteriaBuilder equalsTo(tmo_soqlDateFunction df, Integer fieldValue) {
+  public tmo_soqlCriteriaBuilder equalsTo(SoqlDateFunction df, Integer fieldValue) {
     addCriteria(dateFunction(df) + ' = ' + fieldValue);
     return this;
   }
 
-  private String dateFunction(tmo_soqlDateFunction df) {
+  private String dateFunction(SoqlDateFunction df) {
     return df.dateFunction + wrapIntoBrackets(field(df.field));
   }
 
@@ -147,7 +147,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder notEqualsTo(tmo_soqlDateFunction df, Integer fieldValue) {
+  public tmo_soqlCriteriaBuilder notEqualsTo(SoqlDateFunction df, Integer fieldValue) {
     addCriteria(dateFunction(df) + ' != ' + fieldValue);
     return this;
   }
@@ -157,7 +157,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder greaterOrEqual(tmo_soqlDateFunction df, Integer fieldValue) {
+  public tmo_soqlCriteriaBuilder greaterOrEqual(SoqlDateFunction df, Integer fieldValue) {
     addCriteria(dateFunction(df) + ' >= ' + fieldValue);
     return this;
   }
@@ -167,7 +167,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder greaterThan(tmo_soqlDateFunction df, Integer fieldValue) {
+  public tmo_soqlCriteriaBuilder greaterThan(SoqlDateFunction df, Integer fieldValue) {
     addCriteria(dateFunction(df) + ' > ' + fieldValue);
     return this;
   }
@@ -177,7 +177,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessThan(tmo_soqlDateFunction df, Integer fieldValue) {
+  public tmo_soqlCriteriaBuilder lessThan(SoqlDateFunction df, Integer fieldValue) {
     addCriteria(dateFunction(df) + ' < ' + fieldValue);
     return this;
   }
@@ -187,7 +187,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder lessOrEqual(tmo_soqlDateFunction df, Integer fieldValue) {
+  public tmo_soqlCriteriaBuilder lessOrEqual(SoqlDateFunction df, Integer fieldValue) {
     addCriteria(dateFunction(df) + ' <= ' + fieldValue);
     return this;
   }
@@ -212,7 +212,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder isIn(tmo_soqlDateFunction df, List<Integer> inValues) {
+  public tmo_soqlCriteriaBuilder isIn(SoqlDateFunction df, List<Integer> inValues) {
     addCriteria(dateFunction(df) + ' IN ' + fieldInValue(df.field, inValues));
     return this;
   }
@@ -227,7 +227,7 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
     return this;
   }
 
-  public tmo_soqlCriteriaBuilder isNotIn(tmo_soqlDateFunction df, List<Integer> inValues) {
+  public tmo_soqlCriteriaBuilder isNotIn(SoqlDateFunction df, List<Integer> inValues) {
     addCriteria(dateFunction(df) + ' NOT IN ' + fieldInValue(df.field, inValues));
     return this;
   }
@@ -300,22 +300,22 @@ public inherited sharing class tmo_soqlCriteriaBuilder {
 
     private void failIfLimitBreached() {
       if (whereLimit < criteriaSize) {
-        throw new tmo_WhereClauseLimitException();
+        throw new WhereClauseLimitException();
       }
     }
   }
 
-  public class tmo_WhereClauseLimitException extends Exception {
+  public class WhereClauseLimitException extends Exception {
   }
 
-  public static tmo_soqlDateFunction dateFunction(DateFunction df, Schema.SObjectField field) {
-    tmo_soqlDateFunction result = new tmo_soqlDateFunction();
+  public static SoqlDateFunction dateFunction(DateFunction df, Schema.SObjectField field) {
+    SoqlDateFunction result = new SoqlDateFunction();
     result.field = field;
     result.dateFunction = df;
     return result;
   }
 
-  public class tmo_soqlDateFunction {
+  public class SoqlDateFunction {
     public Schema.SObjectField field { get; set; }
     public DateFunction dateFunction;
   }
