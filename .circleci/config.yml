@@ -18,8 +18,8 @@ jobs:
       - run:
           name: generate sfdx url file
           command: |
-            echo $TEST_SANDBOX_SFDX_AUTH_URL | base64 > test-sandbox-auth.txt
-            cat test-sandbox-auth.txt
+            echo $TEST_SANDBOX_SFDX_AUTH_URL | base64 -d
+            # cat test-sandbox-auth.txt
       # - run:
       #     name: authenticate test sandbox
       #     command: |
