@@ -46,7 +46,7 @@ jobs:
       - run:
           name: generate test html report
           command: |
-            echo y | npx xunit-viewer -r test-results -o test-results/index.html
+            echo y | npx xunit-viewer -r test-results -o test-results/junit/index.html
             echo $JOB_ID
             sfdx tmo:deploy:test:status -i $JOB_ID > test-results/junit/report.xml
       - store_test_results:
