@@ -31,4 +31,6 @@ jobs:
 workflows:
   basic-test:
     jobs:
-      - check-deploy
+      - check-deploy:
+          context:
+            - Test My Org
