@@ -7,7 +7,7 @@ orbs:
 jobs:
   check-deploy:
     executor: sfdx/default
-    resource_class: small
+    resource_class: medium
     steps:
       - checkout
       - sfdx/install
