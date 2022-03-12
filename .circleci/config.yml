@@ -36,11 +36,14 @@ jobs:
           command: |
             jobId=$(sfdx force:source:deploy:report --json | jq .result.id -r)
             echo $jobId
+          environment:
+            JOB_ID: $jobId
       - run:
           name: test status
           command: |
             mkdir test-results
-            sfdx tmo:deploy:test:status -i $jobId > test-results/test-report.xml
+            echo $JOB_ID
+            sfdx tmo:deploy:test:status -i $JOB_ID > test-results/test-report.xml
       - store_test_results:
           path: test-results/test-report.xml
 
