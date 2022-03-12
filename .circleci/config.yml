@@ -24,6 +24,18 @@ jobs:
             echo "sfdx force:auth:sfdxurl:store -f test-sandbox-auth.txt -s"
             sfdx force:auth:sfdxurl:store -f test-sandbox-auth.txt -s
             sfdx force:org:list
+      - run:
+          name: check deploy
+          command: |
+            sfdx force:source:deploy -p soql-criteria-builder -c -l RunSpecifiedTests \
+            -r tmo_soqlCriteriaBuilderTest,tmo_soqlCriteriaBuilderDemoTest
+      - run:
+          name: test status
+          command: |
+            mkdir test-results
+            sfdx tmo:deploy:test:status > test-results/test-report.xml
+      - store_test_results:
+          path: test-results/test-report.xml
 
 workflows:
   basic-test:
