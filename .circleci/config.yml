@@ -60,3 +60,7 @@ workflows:
       - check-deploy:
           context:
             - Test My Org
+          filters:
+            branches:
+              only:
+                - main
