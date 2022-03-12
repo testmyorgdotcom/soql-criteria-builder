@@ -35,9 +35,7 @@ jobs:
           name: extract job id
           command: |
             jobId=$(sfdx force:source:deploy:report --json | jq .result.id -r)
-            echo $jobId
-          environment:
-            JOB_ID: $jobId
+            echo "export JOB_ID=$jobId" >> $BASH_ENV
       - run:
           name: test status
           command: |
