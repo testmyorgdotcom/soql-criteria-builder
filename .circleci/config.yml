@@ -7,6 +7,7 @@ orbs:
 jobs:
   check-deploy:
     executor: sfdx/default
+    resource_class: small
     steps:
       - checkout
       - sfdx/install
@@ -39,11 +40,11 @@ jobs:
       - run:
           name: test status
           command: |
-            mkdir test-results
+            mkdir test-results/junit
             echo $JOB_ID
-            sfdx tmo:deploy:test:status -i $JOB_ID > test-results/test-report.xml
+            sfdx tmo:deploy:test:status -i $JOB_ID > test-results/junit/report.xml
       - store_test_results:
-          path: test-results/test-report.xml
+          path: test-results/junit/report.xml
 
 workflows:
   basic-test:
