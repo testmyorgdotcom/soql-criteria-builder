@@ -43,8 +43,16 @@ jobs:
             mkdir -p test-results/junit
             echo $JOB_ID
             sfdx tmo:deploy:test:status -i $JOB_ID > test-results/junit/report.xml
+      - run:
+          name: generate test html report
+          command: |
+            echo y | npx xunit-viewer -r test-results -o test-results/index.html
+            echo $JOB_ID
+            sfdx tmo:deploy:test:status -i $JOB_ID > test-results/junit/report.xml
       - store_test_results:
-          path: test-results/junit
+          path: test-results/junit/report.xml
+      - store_artifacts:
+          path: test-results/junit/index.html
 
 workflows:
   basic-test:
