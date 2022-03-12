@@ -13,7 +13,7 @@ jobs:
           name: install test status plugin
           command: |
             echo 'sfdx plugins:install deploy-test-status'
-            sfdx plugins:install -f deploy-test-status
+            echo y | sfdx plugins:install deploy-test-status
             sfdx plugins
 
 workflows:
