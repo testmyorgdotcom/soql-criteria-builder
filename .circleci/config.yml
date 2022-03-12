@@ -40,11 +40,11 @@ jobs:
       - run:
           name: test status
           command: |
-            mkdir test-results/junit
+            mkdir -p test-results/junit
             echo $JOB_ID
             sfdx tmo:deploy:test:status -i $JOB_ID > test-results/junit/report.xml
       - store_test_results:
-          path: test-results/junit/report.xml
+          path: test-results/junit
 
 workflows:
   basic-test:
