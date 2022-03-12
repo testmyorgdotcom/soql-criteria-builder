@@ -15,6 +15,16 @@ jobs:
             echo 'sfdx plugins:install deploy-test-status'
             echo y | sfdx plugins:install deploy-test-status
             sfdx plugins
+      - run:
+          name: generate sfdx url file
+          command: |
+            echo $TEST_SANDBOX_SFDX_AUTH_URL > test-sandbox-auth.txt
+      - run:
+          name: authenticate test sandbox
+          command: |
+            echo "sfdx force:auth:sfdxurl:store -f test-sandbox-auth.txt -s"
+            sfdx force:auth:sfdxurl:store -f test-sandbox-auth.txt -s
+            sfdx force:org:list
 
 workflows:
   basic-test:
