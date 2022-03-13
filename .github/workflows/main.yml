@@ -35,7 +35,7 @@ jobs:
         uses: sergeysova/jq-action@v2
         id: jobId
         with:
-          cmd: "jq .version package.json -r"
+          cmd: "sfdx force:source:deploy:report --json | jq .result.id -r"
 
       - name: test status
         run: |
