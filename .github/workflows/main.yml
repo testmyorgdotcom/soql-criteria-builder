@@ -18,8 +18,7 @@ jobs:
 
       - name: Cache sfdx
         uses: actions/cache@v2
-        env:
-          cache-name: cache-sfdx
+        id: cache-sfdx
         with:
           # sfdx-actions/setup-sfdx@v1 installs all into ./sfdx folder
           path: ./sfdx
@@ -28,14 +27,14 @@ jobs:
       - uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.TEST_SANDBOX }}
-        if: $(ls sfdx | wc -l) -eq "0"
+        if: steps.cache-sfdx.outputs.cache-hit != 'true'
 
       - name: install test status plugin
         run: |
           echo 'sfdx plugins:install deploy-test-status'
           echo y | sfdx plugins:install deploy-test-status
           sfdx plugins
-        if: $(ls sfdx | wc -l) -eq "0"
+        if: steps.cache-sfdx.outputs.cache-hit != 'true'
 
       - name: Validate Changes
         run: |
