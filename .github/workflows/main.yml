@@ -20,7 +20,31 @@ jobs:
         with:
           sfdx-auth-url: ${{ secrets.TEST_SANDBOX }}
 
+      - name: install test status plugin
+        run: |
+          echo 'sfdx plugins:install deploy-test-status'
+          echo y | sfdx plugins:install deploy-test-status
+          sfdx plugins
+
       - name: Validate Changes
         run: |
           sfdx force:source:deploy -p soql-criteria-builder -c -l RunSpecifiedTests \
           -r tmo_soqlCriteriaBuilderTest,tmo_soqlCriteriaBuilderDemoTest
+
+      - name: Extract Job Id
+        uses: sergeysova/jq-action@v2
+        id: jobId
+        with:
+          cmd: "jq .version package.json -r"
+
+      - name: test status
+        run: |
+          mkdir -p test-results/junit
+          JOB_ID=${{ steps.jobId.outputs.value }}
+          echo $JOB_ID
+          sfdx tmo:deploy:test:status -i $JOB_ID > test-results/junit/report.xml
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v2
+        with:
+          report_paths: "test-results/junit/report.xml"
