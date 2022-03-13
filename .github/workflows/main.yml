@@ -30,12 +30,13 @@ jobs:
         run: |
           sfdx force:source:deploy -p soql-criteria-builder -c -l RunSpecifiedTests \
           -r tmo_soqlCriteriaBuilderTest,tmo_soqlCriteriaBuilderDemoTest
+          sfdx force:source:deploy:report --json > deploy-report.json
 
       - name: Extract Job Id
         uses: sergeysova/jq-action@v2
         id: jobId
         with:
-          cmd: "sfdx force:source:deploy:report --json | jq .result.id -r"
+          cmd: "jq .result.id deploy-report.json -r"
 
       - name: test status
         run: |
