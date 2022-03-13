@@ -37,7 +37,7 @@ jobs:
 
       - name: Validate Changes
         run: |
-          ls -la sfdx
+          ls -la ~/.sfdx
           ls -la $(which sfdx)
           sfdx force:source:deploy -p soql-criteria-builder -c -l RunSpecifiedTests \
           -r tmo_soqlCriteriaBuilderTest,tmo_soqlCriteriaBuilderDemoTest
