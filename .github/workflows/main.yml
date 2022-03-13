@@ -16,24 +16,28 @@ jobs:
       - name: Navigate to checked out folder
         run: cd $GITHUB_WORKSPACE
 
-      # - name: Cache sfdx
-      #   uses: actions/cache@v2
-      #   id: cache-sfdx
-      #   with:
-      #     # sfdx-actions/setup-sfdx@v1 installs all into ./sfdx folder
-      #     path: ./sfdx
-      #     key: sfdx-cache
+      - name: Cache sfdx
+        uses: actions/cache@v2
+        id: cache-sfdx
+        with:
+          # sfdx-actions/setup-sfdx@v1 installs all into ./sfdx folder
+          path: |
+            ~/.sfdx
+            /usr/local/lib/sfdx
+            /usr/local/bin/sfdx
+          key: sfdx-cache
+
       - uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.TEST_SANDBOX }}
-        # if: steps.cache-sfdx.outputs.cache-hit != 'true'
+        if: steps.cache-sfdx.outputs.cache-hit != 'true'
 
       - name: install test status plugin
         run: |
           echo 'sfdx plugins:install deploy-test-status'
           echo y | sfdx plugins:install deploy-test-status
           sfdx plugins
-        # if: steps.cache-sfdx.outputs.cache-hit != 'true'
+        if: steps.cache-sfdx.outputs.cache-hit != 'true'
 
       - name: Validate Changes
         run: |
