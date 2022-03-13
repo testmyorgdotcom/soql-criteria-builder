@@ -16,29 +16,32 @@ jobs:
       - name: Navigate to checked out folder
         run: cd $GITHUB_WORKSPACE
 
+      - name: Cache sfdx
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-sfdx
+        with:
+          # sfdx-actions/setup-sfdx@v1 installs all into ./sfdx folder
+          path: ./sfdx
+          key: sfdx-cache
+
       - uses: sfdx-actions/setup-sfdx@v1
         with:
           sfdx-auth-url: ${{ secrets.TEST_SANDBOX }}
+        if: $(ls sfdx | wc -l) -eq "0"
 
       - name: install test status plugin
         run: |
           echo 'sfdx plugins:install deploy-test-status'
           echo y | sfdx plugins:install deploy-test-status
           sfdx plugins
-          which sfdx
-          ls -la ~/.sfdx
+        if: $(ls sfdx | wc -l) -eq "0"
 
       - name: Validate Changes
         run: |
           sfdx force:source:deploy -p soql-criteria-builder -c -l RunSpecifiedTests \
           -r tmo_soqlCriteriaBuilderTest,tmo_soqlCriteriaBuilderDemoTest
           sfdx force:source:deploy:report --json > deploy-report.json
-
-      # - name: Extract Job Id
-      #   uses: sergeysova/jq-action@v2
-      #   id: jobId
-      #   with:
-      #     cmd: "jq .result.id deploy-report.json -r"
 
       - name: Test Status
         run: |
