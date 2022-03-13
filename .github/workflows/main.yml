@@ -49,3 +49,8 @@ jobs:
         uses: mikepenz/action-junit-report@v2
         with:
           report_paths: "test-results/junit/report.xml"
+
+      - name: Publish Test Report2
+        uses: scacap/action-surefire-report@v1
+        with:
+          report_paths: "test-results/junit/report.xml"
