@@ -11,6 +11,15 @@ Addresses necessity to build criteria as String for [fflib_QueryFactory#setCondi
        src="https://raw.githubusercontent.com/afawcett/githubsfdeploy/master/deploy.png">
 </a>
 
+## Benefits
+
+- Supports all [Comparison Operators](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm)
+- Compile Time validation of the Field Names used in SOQL Criteria
+- Dynamic SOQL Criteria based on User input
+- Bind Variables
+- [Date Functions](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm) support
+- Runtime Exception if `criteria size` breaks the [4000 characters limit](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_conditionexpression.htm)
+
 ## Examples
 
 ### Simple Criteria
@@ -108,15 +117,6 @@ private static tmo_soqlCriteriaBuilder.tmo_soqlDateFunction CALENDAR_MONTH(Schem
     return tmo_soqlCriteriaBuilder.dateFunction(tmo_soqlCriteriaBuilder.DateFunction.CALENDAR_MONTH, field);
 }
 ```
-
-## Benefits
-
-- Supports all [Comparison Operators](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_comparisonoperators.htm)
-- Compile Time validation of the Field Names used in SOQL Criteria
-- Dynamic SOQL Criteria based on User input
-- Bind Variables
-- [Date Functions](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_date_functions.htm) support
-- Runtime Exception if `criteria size` breaks the [4000 characters limit](https://developer.salesforce.com/docs/atlas.en-us.232.0.soql_sosl.meta/soql_sosl/sforce_api_calls_soql_select_conditionexpression.htm)
 
 ## Additional Thoughts
 
